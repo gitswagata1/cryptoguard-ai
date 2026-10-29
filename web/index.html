@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoGuard AI — Cryptographic Security Operations Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-0:#06090f;--bg-1:#0d1117;--bg-2:#161b22;--bg-3:#1c2333;
+  --border:#21262d;--border-glow:rgba(0,212,255,.15);
+  --text-1:#e6edf3;--text-2:#8b949e;--text-3:#484f58;
+  --cyan:#00d4ff;--purple:#a78bfa;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;
+  --grad-1:linear-gradient(135deg,#00d4ff,#a78bfa);
+  --grad-2:linear-gradient(135deg,#22c55e,#00d4ff);
+  --grad-3:linear-gradient(135deg,#ef4444,#f59e0b);
+  --sidebar-w:68px;--topbar-h:56px;
+  --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Cascadia Code',monospace;
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);min-height:100vh;overflow:hidden}
+
+/* ── BG Grid ── */
+body::before{content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.03) 1px,transparent 0);
+  background-size:32px 32px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(0,212,255,.06),transparent),
+             radial-gradient(ellipse 50% 40% at 80% 100%,rgba(167,139,250,.04),transparent);
+  pointer-events:none;z-index:0}
+
+/* ── Layout ── */
+.app{display:flex;height:100vh;position:relative;z-index:1}
+.sidebar{width:var(--sidebar-w);background:var(--bg-1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:8px;z-index:10;flex-shrink:0}
+.sidebar .logo{width:40px;height:40px;background:var(--grad-1);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative}
+.sidebar .logo svg{width:22px;height:22px;fill:white}
+.sidebar .logo::after{content:'';position:absolute;inset:-2px;border-radius:12px;
+  background:var(--grad-1);opacity:.3;filter:blur(8px);z-index:-1}
+.nav-btn{width:44px;height:44px;border:none;background:transparent;border-radius:var(--radius-sm);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;position:relative;color:var(--text-3)}
+.nav-btn:hover{background:var(--bg-2);color:var(--text-2)}
+.nav-btn.active{background:var(--bg-2);color:var(--cyan)}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:24px;background:var(--cyan);border-radius:0 3px 3px 0}
+.nav-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn .tooltip{position:absolute;left:calc(100% + 12px);background:var(--bg-3);color:var(--text-1);
+  padding:6px 12px;border-radius:var(--radius-xs);font-size:.75rem;font-weight:500;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:.15s;transform:translateX(-4px)}
+.nav-btn:hover .tooltip{opacity:1;transform:translateX(0)}
+
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--topbar-h);background:var(--bg-1);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
+.topbar h1{font-size:.95rem;font-weight:600;background:var(--grad-1);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text}
+.topbar .sep{width:1px;height:24px;background:var(--border)}
+.topbar .page-title{font-size:.85rem;color:var(--text-2);font-weight:500}
+.topbar .spacer{flex:1}
+.status-pill{display:flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;
+  background:var(--bg-2);border:1px solid var(--border);border-radius:20px;font-size:.75rem;color:var(--text-2)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pulse-dot 2s ease infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.5}}
+.status-pill.offline .status-dot{background:var(--text-3);box-shadow:none;animation:none}
+
+.content{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:var(--bg-3) transparent}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-track{background:transparent}
+.content::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
+
+/* ── Pages ── */
+.page{display:none;animation:page-in .3s ease}
+.page.active{display:block}
+@keyframes page-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── Cards ── */
+.card{background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;transition:.2s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--border-glow);box-shadow:0 0 20px rgba(0,212,255,.05)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.card-header h3{font-size:.9rem;font-weight:600}
+.card-header .icon{width:32px;height:32px;border-radius:var(--radius-xs);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-header .icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
+
+/* ── Buttons ── */
+.btn{padding:10px 20px;border:none;border-radius:var(--radius-sm);font-family:var(--font-sans);
+  font-size:.85rem;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--grad-1);color:white;box-shadow:0 2px 12px rgba(0,212,255,.25)}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(0,212,255,.4);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{background:var(--bg-2);color:var(--text-1);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-sm{padding:6px 14px;font-size:.78rem;border-radius:var(--radius-xs)}
+.btn-icon{width:36px;height:36px;padding:0;justify-content:center}
+
+/* ── Badges ── */
+.badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.badge-critical{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.badge-high{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
+.badge-medium{background:rgba(167,139,250,.15);color:#c4b5fd;border:1px solid rgba(167,139,250,.25)}
+.badge-low{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.25)}
+.badge-info{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD PAGE
+   ═══════════════════════════════════════════════ */
+.dash-hero{text-align:center;padding:40px 0 32px}
+.dash-hero h2{font-size:2.2rem;font-weight:800;background:var(--grad-1);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.dash-hero p{color:var(--text-2);font-size:1rem;max-width:500px;margin:0 auto}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{text-align:center;padding:24px 16px}
+.stat-card .stat-value{font-size:2rem;font-weight:800;margin-bottom:4px}
+.stat-card .stat-label{font-size:.75rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px}
+.stat-card.cyan .stat-value{color:var(--cyan)}
+.stat-card.purple .stat-value{color:var(--purple)}
+.stat-card.green .stat-value{color:var(--green)}
+.stat-card.amber .stat-value{color:var(--amber)}
+
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.quick-card{cursor:pointer;padding:28px 20px;text-align:center;transition:.25s}
+.quick-card:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:0 8px 30px rgba(0,212,255,.1)}
+.quick-card .qc-icon{width:48px;height:48px;border-radius:12px;margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center}
+.quick-card .qc-icon svg{width:24px;height:24px;stroke:white;fill:none;stroke-width:1.8}
+.quick-card h4{font-size:.9rem;font-weight:600;margin-bottom:6px}
+.quick-card p{font-size:.78rem;color:var(--text-2);line-height:1.4}
+
+.powered-row{display:flex;align-items:center;justify-content:center;gap:24px;padding:20px;
+  border-top:1px solid var(--border);margin-top:8px}
+.powered-badge{display:flex;align-items:center;gap:8px;padding:8px 16px;
+  background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.78rem;color:var(--text-2)}
+.powered-badge strong{color:var(--text-1)}
+
+/* ═══════════════════════════════════════════════
+   SCANNER PAGE
+   ═══════════════════════════════════════════════ */
+.scanner-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;height:calc(100vh - var(--topbar-h) - 48px)}
+.editor-panel{display:flex;flex-direction:column}
+.editor-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.editor-toolbar select{background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  padding:6px 10px;border-radius:var(--radius-xs);font-family:var(--font-sans);font-size:.78rem}
+.code-editor{flex:1;position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.code-editor textarea{width:100%;height:100%;background:var(--bg-1);color:#e6edf3;
+  font-family:var(--font-mono);font-size:.85rem;line-height:1.7;padding:16px 16px 16px 56px;
+  border:none;resize:none;outline:none;tab-size:4}
+.code-editor textarea::placeholder{color:var(--text-3)}
+.line-numbers{position:absolute;left:0;top:0;width:44px;height:100%;padding:16px 8px;
+  text-align:right;font-family:var(--font-mono);font-size:.85rem;line-height:1.7;
+  color:var(--text-3);background:var(--bg-2);border-right:1px solid var(--border);
+  user-select:none;overflow:hidden;pointer-events:none}
+.scan-bar{display:flex;gap:8px;margin-top:12px}
+
+.results-panel{display:flex;flex-direction:column;overflow:hidden}
+.results-panel .card{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.score-ring{width:64px;height:64px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .score-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:700}
+.results-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:thin;scrollbar-color:var(--bg-3) transparent}
+.finding{padding:14px;background:var(--bg-2);border-radius:var(--radius-sm);
+  border-left:3px solid var(--text-3);animation:finding-in .3s ease both}
+.finding.critical{border-left-color:var(--red)}
+.finding.high{border-left-color:var(--amber)}
+.finding.medium{border-left-color:var(--purple)}
+.finding.low{border-left-color:var(--green)}
+.finding .finding-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.finding .finding-title{font-size:.85rem;font-weight:600;flex:1}
+.finding .finding-desc{font-size:.78rem;color:var(--text-2);line-height:1.5}
+.finding .finding-fix{font-size:.78rem;color:var(--cyan);margin-top:6px;font-family:var(--font-mono)}
+@keyframes finding-in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+.scan-overlay{position:absolute;inset:0;background:rgba(6,9,15,.85);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:5;opacity:0;pointer-events:none;transition:.3s}
+.scan-overlay.active{opacity:1;pointer-events:auto}
+.scan-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--cyan);
+  border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scan-overlay p{font-size:.85rem;color:var(--text-2)}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;text-align:center;gap:8px;color:var(--text-3)}
+.empty-state svg{width:48px;height:48px;stroke:var(--text-3);fill:none;stroke-width:1.2;margin-bottom:8px}
+.empty-state p{font-size:.85rem}
+
+/* ═══════════════════════════════════════════════
+   ENTROPY PAGE
+   ═══════════════════════════════════════════════ */
+.entropy-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.entropy-controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.entropy-controls input{flex:1;min-width:200px;background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-1);padding:10px 14px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:.8rem}
+.entropy-controls input::placeholder{color:var(--text-3)}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.metric-card{background:var(--bg-2);border-radius:var(--radius-sm);padding:16px;text-align:center}
+.metric-card .m-value{font-size:1.6rem;font-weight:700;font-family:var(--font-mono)}
+.metric-card .m-label{font-size:.7rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.metric-card .m-bar{height:4px;background:var(--bg-0);border-radius:2px;margin-top:8px;overflow:hidden}
+.metric-card .m-bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+
+.heatmap-container{margin-bottom:16px}
+.heatmap-container h4{font-size:.8rem;color:var(--text-2);margin-bottom:8px}
+.heatmap{display:grid;grid-template-columns:repeat(32,1fr);gap:1px}
+.heatmap-cell{aspect-ratio:1;border-radius:2px;transition:background .3s}
+
+.ai-analysis{background:var(--bg-2);border-radius:var(--radius-sm);padding:16px}
+.ai-analysis h4{font-size:.8rem;color:var(--cyan);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-analysis .analysis-text{font-size:.82rem;color:var(--text-2);line-height:1.6;white-space:pre-wrap}
+
+/* Quality gauge */
+.quality-gauge{width:120px;height:120px;margin:0 auto 16px;position:relative}
+.quality-gauge svg{width:100%;height:100%}
+.quality-gauge .gauge-text{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center}
+.quality-gauge .gauge-value{font-size:1.8rem;font-weight:800}
+.quality-gauge .gauge-label{font-size:.65rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px}
+
+/* ═══════════════════════════════════════════════
+   CHAT PAGE
+   ═══════════════════════════════════════════════ */
+.chat-layout{display:flex;flex-direction:column;height:calc(100vh - var(--topbar-h) - 48px)}
+.chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px;padding-bottom:16px;
+  scrollbar-width:thin;scrollbar-color:var(--bg-3) transparent}
+.msg{display:flex;gap:12px;max-width:85%;animation:msg-in .3s ease both}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:var(--radius-xs);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.msg-avatar svg{width:18px;height:18px;stroke:white;fill:none;stroke-width:1.8}
+.msg.ai .msg-avatar{background:var(--grad-1)}
+.msg.user .msg-avatar{background:var(--bg-3)}
+.msg-bubble{padding:12px 16px;border-radius:var(--radius);font-size:.88rem;line-height:1.6}
+.msg.ai .msg-bubble{background:var(--bg-1);border:1px solid var(--border);color:var(--text-1)}
+.msg.user .msg-bubble{background:linear-gradient(135deg,#0e3a5c,#1a1a3e);border:1px solid rgba(0,212,255,.2);color:var(--text-1)}
+.msg-bubble code{font-family:var(--font-mono);font-size:.8rem;background:var(--bg-0);padding:2px 6px;border-radius:4px}
+.msg-bubble pre{background:var(--bg-0);padding:12px;border-radius:var(--radius-xs);margin:8px 0;overflow-x:auto}
+.msg-bubble pre code{background:none;padding:0}
+.msg-bubble strong{color:var(--cyan)}
+.msg-bubble ul,.msg-bubble ol{padding-left:20px;margin:6px 0}
+@keyframes msg-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.typing-indicator{display:flex;gap:4px;padding:8px 0}
+.typing-indicator span{width:6px;height:6px;border-radius:50%;background:var(--text-3);animation:typing-bounce .8s ease infinite}
+.typing-indicator span:nth-child(2){animation-delay:.15s}
+.typing-indicator span:nth-child(3){animation-delay:.3s}
+@keyframes typing-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+.chat-suggestions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chat-suggest-btn{padding:8px 16px;background:var(--bg-1);border:1px solid var(--border);
+  border-radius:20px;font-size:.78rem;color:var(--text-2);cursor:pointer;transition:.2s;font-family:var(--font-sans)}
+.chat-suggest-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.chat-input-area{display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--border)}
+.chat-input{flex:1;background:var(--bg-1);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 16px;color:var(--text-1);font-family:var(--font-sans);font-size:.88rem;
+  outline:none;resize:none;min-height:48px;max-height:120px;transition:.2s}
+.chat-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,212,255,.1)}
+.chat-send{width:48px;height:48px;background:var(--grad-1);border:none;border-radius:var(--radius);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
+.chat-send:hover{box-shadow:0 4px 16px rgba(0,212,255,.3);transform:translateY(-1px)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.chat-send svg{width:20px;height:20px;stroke:white;fill:none;stroke-width:2}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media(max-width:900px){
+  .scanner-layout,.entropy-layout{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .quick-grid{grid-template-columns:1fr}
+  .scanner-layout{height:auto}
+  .chat-layout{height:calc(100vh - var(--topbar-h) - 48px)}
+}
+
+/* ── Misc ── */
+.glow-line{height:1px;background:var(--grad-1);opacity:.2;margin:24px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+  </div>
+  <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span class="tooltip">Dashboard</span>
+  </button>
+  <button class="nav-btn" data-page="scanner" onclick="showPage('scanner')">
+    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    <span class="tooltip">Code Scanner</span>
+  </button>
+  <button class="nav-btn" data-page="entropy" onclick="showPage('entropy')">
+    <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
+    <span class="tooltip">Entropy Lab</span>
+  </button>
+  <button class="nav-btn" data-page="chat" onclick="showPage('chat')">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span class="tooltip">AI Chat</span>
+  </button>
+</aside>
+
+<!-- ── Main ── -->
+<div class="main-area">
+<header class="topbar">
+  <h1>CryptoGuard AI</h1>
+  <div class="sep"></div>
+  <span class="page-title" id="pageTitle">Dashboard</span>
+  <div class="spacer"></div>
+  <div class="status-pill" id="statusPill">
+    <span class="status-dot"></span>
+    <span id="statusText">Nemotron Ready</span>
+  </div>
+</header>
+
+<main class="content">
+
+<!-- ════════ DASHBOARD ════════ -->
+<section class="page active" id="page-dashboard">
+  <div class="dash-hero">
+    <h2>CryptoGuard AI</h2>
+    <p>AI-powered cryptographic security analysis. Scan code, audit keys, test entropy — powered by NVIDIA Nemotron.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="card stat-card cyan"><div class="stat-value" id="statScans">0</div><div class="stat-label">Code Scans</div></div>
+    <div class="card stat-card red"><div class="stat-value" id="statVulns">0</div><div class="stat-label">Vulnerabilities</div></div>
+    <div class="card stat-card green"><div class="stat-value" id="statEntropy">—</div><div class="stat-label">Entropy Score</div></div>
+    <div class="card stat-card purple"><div class="stat-value" id="statChats">0</div><div class="stat-label">AI Queries</div></div>
+  </div>
+
+  <div class="quick-grid">
+    <div class="card quick-card" onclick="showPage('scanner')">
+      <div class="qc-icon" style="background:var(--grad-3)">
+        <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <h4>Scan Code</h4>
+      <p>Paste code and detect cryptographic vulnerabilities using Nemotron Ultra</p>
+    </div>
+    <div class="card quick-card" onclick="showPage('entropy')">
+      <div class="qc-icon" style="background:var(--grad-2)">
+        <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
+      </div>
+      <h4>Entropy Lab</h4>
+      <p>Generate and analyze random bytes with real-time quality metrics and AI assessment</p>
+    </div>
+    <div class="card quick-card" onclick="showPage('chat')">
+      <div class="qc-icon" style="background:var(--grad-1)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <h4>Ask AI</h4>
+      <p>Chat with CryptoGuard about any cryptographic security question</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="powered-row">
+      <div class="powered-badge"><strong>NVIDIA</strong> Nemotron Ultra</div>
+      <div class="powered-badge"><strong>NVIDIA</strong> Nemotron Nano</div>
+      <div class="powered-badge"><strong>Nebius</strong> AI Cloud</div>
+      <div class="powered-badge"><strong>NIST</strong> SP 800-90B</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SCANNER ════════ -->
+<section class="page" id="page-scanner">
+  <div class="scanner-layout">
+    <div class="editor-panel">
+      <div class="editor-toolbar">
+        <select id="langSelect">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="go">Go</option>
+          <option value="java">Java</option>
+          <option value="rust">Rust</option>
+          <option value="auto">Auto-detect</option>
+        </select>
+        <div class="spacer" style="flex:1"></div>
+        <button class="btn btn-sm btn-secondary" onclick="loadExample()">Load Example</button>
+      </div>
+      <div class="code-editor">
+        <div class="line-numbers" id="lineNumbers">1</div>
+        <textarea id="codeInput" placeholder="Paste your code here..." spellcheck="false"></textarea>
+      </div>
+      <div class="scan-bar">
+        <button class="btn btn-primary" id="scanBtn" onclick="scanCode()">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+          Scan for Vulnerabilities
+        </button>
+        <button class="btn btn-secondary" onclick="clearEditor()">Clear</button>
+      </div>
+    </div>
+
+    <div class="results-panel">
+      <div class="card" style="position:relative">
+        <div class="scan-overlay" id="scanOverlay">
+          <div class="scan-spinner"></div>
+          <p>Nemotron Ultra is analyzing your code...</p>
+        </div>
+        <div class="results-header" id="resultsHeader" style="display:none">
+          <div>
+            <h3 style="font-size:.9rem;font-weight:600">Security Analysis</h3>
+            <p style="font-size:.75rem;color:var(--text-2);margin-top:2px" id="resultsSummary"></p>
+          </div>
+          <div class="score-ring" id="scoreRing">
+            <svg viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="28" fill="none" stroke="var(--bg-2)" stroke-width="4"/>
+              <circle cx="32" cy="32" r="28" fill="none" stroke="var(--cyan)" stroke-width="4"
+                stroke-dasharray="175.9" stroke-dashoffset="175.9" stroke-linecap="round" id="scoreArc"/>
+            </svg>
+            <div class="score-text" id="scoreText">—</div>
+          </div>
+        </div>
+        <div class="results-list" id="resultsList">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+            <p>Paste code and click <strong>Scan</strong> to analyze</p>
+            <p style="font-size:.75rem;margin-top:4px">Powered by NVIDIA Nemotron Ultra on Nebius</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ENTROPY ════════ -->
+<section class="page" id="page-entropy">
+  <div class="entropy-layout">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div class="icon" style="background:rgba(0,212,255,.15);color:var(--cyan)">
+            <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4"/></svg>
+          </div>
+          <h3>Entropy Generator</h3>
+        </div>
+        <div class="entropy-controls">
+          <input type="number" id="entropyBytes" value="256" min="16" max="4096" placeholder="Bytes">
+          <button class="btn btn-primary" onclick="generateEntropy()">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4"/></svg>
+            Generate & Analyze
+          </button>
+        </div>
+        <div class="entropy-controls" style="margin-bottom:0">
+          <input type="text" id="entropyHex" placeholder="Or paste hex data..." style="font-size:.75rem">
+          <button class="btn btn-sm btn-secondary" onclick="analyzeHex()">Analyze Hex</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="quality-gauge" id="qualityGauge">
+          <svg viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--bg-2)" stroke-width="6"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="var(--cyan)" stroke-width="6"
+              stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round" id="qualityArc"
+              style="transition:stroke-dashoffset .8s ease,stroke .3s"/>
+          </svg>
+          <div class="gauge-text">
+            <div class="gauge-value" id="qualityValue">—</div>
+            <div class="gauge-label">Quality</div>
+          </div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="m-value" id="metricShannon" style="color:var(--cyan)">—</div>
+            <div class="m-label">Shannon H</div>
+            <div class="m-bar"><div class="m-bar-fill" id="barShannon" style="width:0;background:var(--cyan)"></div></div>
+          </div>
+          <div class="metric-card">
+            <div class="m-value" id="metricMinEnt" style="color:var(--purple)">—</div>
+            <div class="m-label">Min-Entropy H∞</div>
+            <div class="m-bar"><div class="m-bar-fill" id="barMinEnt" style="width:0;background:var(--purple)"></div></div>
+          </div>
+          <div class="metric-card">
+            <div class="m-value" id="metricChi" style="color:var(--amber)">—</div>
+            <div class="m-label">Chi-squared</div>
+            <div class="m-bar"><div class="m-bar-fill" id="barChi" style="width:0;background:var(--amber)"></div></div>
+          </div>
+          <div class="metric-card">
+            <div class="m-value" id="metricCorr" style="color:var(--green)">—</div>
+            <div class="m-label">Serial Corr</div>
+            <div class="m-bar"><div class="m-bar-fill" id="barCorr" style="width:0;background:var(--green)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="heatmap-container">
+          <h4>Byte Distribution (0x00–0xFF)</h4>
+          <div class="heatmap" id="heatmap"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ai-analysis">
+          <h4>
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--cyan)" fill="none" stroke-width="2"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+            AI Entropy Analysis
+          </h4>
+          <div class="analysis-text" id="aiAnalysis">Generate random bytes or paste hex data to receive an AI-powered entropy quality assessment using Nemotron Nano.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CHAT ════════ -->
+<section class="page" id="page-chat">
+  <div class="chat-layout">
+    <div class="chat-suggestions" id="chatSuggestions">
+      <button class="chat-suggest-btn" onclick="sendSuggestion(this)">How do I make my code quantum-safe?</button>
+      <button class="chat-suggest-btn" onclick="sendSuggestion(this)">What's wrong with using MD5 for passwords?</button>
+      <button class="chat-suggest-btn" onclick="sendSuggestion(this)">Explain the Leftover Hash Lemma</button>
+      <button class="chat-suggest-btn" onclick="sendSuggestion(this)">Best practices for key derivation</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg ai">
+        <div class="msg-avatar"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg></div>
+        <div class="msg-bubble">Hi! I'm <strong>CryptoGuard AI</strong>, your cryptographic security analyst powered by NVIDIA Nemotron. Ask me anything about cryptography, security vulnerabilities, post-quantum algorithms, entropy quality, or key management.</div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Ask about cryptographic security..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="chat-send" id="chatSendBtn" onclick="sendChat()">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG & STATE
+// ═══════════════════════════════════════════════
+const API_BASE = window.location.origin;
+const state = { scans: 0, vulns: 0, entropy: null, chats: 0, apiReady: false };
+
+const DEMO_FINDINGS = [
+  { severity: "critical", title: "Hardcoded Secret Key", description: "SECRET_KEY is hardcoded in source code. This will be exposed in version control and compiled artifacts.", line: 3, fix: "Use environment variables: os.environ.get('SECRET_KEY')" },
+  { severity: "critical", title: "MD5 Password Hashing", description: "MD5 is cryptographically broken. Collisions can be generated in seconds. Never use for password hashing.", line: 6, fix: "Use bcrypt, scrypt, or argon2: hashlib.scrypt(password, salt=salt, n=2**14, r=8, p=1)" },
+  { severity: "high", title: "Insecure Random Number Generator", description: "Python's random module uses Mersenne Twister (MT19937), which is predictable. Token generation is trivially brute-forceable (6 digits = 1M combinations).", line: 9, fix: "Use secrets module: secrets.token_hex(16)" },
+  { severity: "high", title: "DES Encryption (56-bit key)", description: "DES was broken in 1999 (cracked in 22 hours). The effective key space is only 2^56.", line: 12, fix: "Use AES-256-GCM: from cryptography.hazmat.primitives.ciphers.aead import AESGCM" },
+  { severity: "high", title: "ECB Mode — No Semantic Security", description: "ECB mode encrypts identical plaintext blocks to identical ciphertext. Patterns in data are preserved. Famous example: the ECB penguin.", line: 13, fix: "Use GCM or CBC mode with random IV: AES.new(key, AES.MODE_GCM)" },
+  { severity: "medium", title: "Improper Padding Scheme", description: "Space padding is non-standard and can cause data corruption. Not compatible with standard unpadding.", line: 14, fix: "Use PKCS7 padding: from cryptography.hazmat.primitives.padding import PKCS7" }
+];
+
+const EXAMPLE_CODE = `import hashlib
+import random
+
+SECRET_KEY = "hardcoded_secret_123"
+
+def hash_password(password):
+    return hashlib.md5(password.encode()).hexdigest()
+
+def generate_token():
+    return str(random.randint(0, 999999)).zfill(6)
+
+def encrypt_data(data, key=SECRET_KEY):
+    from Crypto.Cipher import DES
+    cipher = DES.new(key[:8].encode(), DES.MODE_ECB)
+    padded = data + ' ' * (8 - len(data) % 8)
+    return cipher.encrypt(padded.encode())
+
+def verify_signature(message, signature):
+    expected = hashlib.sha1(message.encode()).hexdigest()
+    return signature == expected`;
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+const PAGE_TITLES = { dashboard: 'Dashboard', scanner: 'Code Scanner', entropy: 'Entropy Lab', chat: 'AI Chat' };
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelector(`[data-page="${name}"]`).classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[name];
+}
+
+// ═══════════════════════════════════════════════
+// CODE SCANNER
+// ═══════════════════════════════════════════════
+const codeInput = document.getElementById('codeInput');
+const lineNumbers = document.getElementById('lineNumbers');
+
+codeInput.addEventListener('input', updateLineNumbers);
+codeInput.addEventListener('scroll', () => { lineNumbers.scrollTop = codeInput.scrollTop; });
+
+function updateLineNumbers() {
+  const lines = codeInput.value.split('\n').length;
+  lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+}
+
+function loadExample() {
+  codeInput.value = EXAMPLE_CODE;
+  updateLineNumbers();
+}
+
+function clearEditor() {
+  codeInput.value = '';
+  lineNumbers.innerHTML = '1';
+  document.getElementById('resultsHeader').style.display = 'none';
+  document.getElementById('resultsList').innerHTML =
+    '<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg><p>Paste code and click <strong>Scan</strong></p></div>';
+}
+
+async function scanCode() {
+  const code = codeInput.value.trim();
+  if (!code) return;
+
+  const btn = document.getElementById('scanBtn');
+  const overlay = document.getElementById('scanOverlay');
+  btn.disabled = true;
+  overlay.classList.add('active');
+
+  let result;
+  try {
+    const resp = await fetch(API_BASE + '/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, language: document.getElementById('langSelect').value })
+    });
+    if (!resp.ok) throw new Error('API error');
+    result = await resp.json();
+  } catch {
+    result = { score: 18, findings: DEMO_FINDINGS, summary: 'Demo mode — 6 vulnerabilities detected across cryptographic operations.' };
+  }
+
+  state.scans++;
+  state.vulns += (result.findings || []).length;
+  updateDashStats();
+
+  overlay.classList.remove('active');
+  btn.disabled = false;
+  renderFindings(result);
+}
+
+function renderFindings(result) {
+  const header = document.getElementById('resultsHeader');
+  const list = document.getElementById('resultsList');
+  const scoreText = document.getElementById('scoreText');
+  const scoreArc = document.getElementById('scoreArc');
+  const summary = document.getElementById('resultsSummary');
+
+  header.style.display = 'flex';
+  const score = result.score || 0;
+  scoreText.textContent = score;
+  scoreText.style.color = score > 70 ? 'var(--green)' : score > 40 ? 'var(--amber)' : 'var(--red)';
+  const circumference = 2 * Math.PI * 28;
+  scoreArc.style.stroke = score > 70 ? 'var(--green)' : score > 40 ? 'var(--amber)' : 'var(--red)';
+  scoreArc.style.strokeDashoffset = circumference - (score / 100) * circumference;
+
+  summary.textContent = result.summary || `${(result.findings || []).length} findings detected`;
+
+  list.innerHTML = '';
+  (result.findings || []).forEach((f, i) => {
+    const sev = (f.severity || 'info').toLowerCase();
+    const el = document.createElement('div');
+    el.className = `finding ${sev}`;
+    el.style.animationDelay = `${i * 0.08}s`;
+    el.innerHTML = `
+      <div class="finding-top">
+        <span class="badge badge-${sev}">${f.severity}</span>
+        <span class="finding-title">${esc(f.title)}</span>
+        ${f.line ? `<span style="font-size:.7rem;color:var(--text-3);font-family:var(--font-mono)">L${f.line}</span>` : ''}
+      </div>
+      <div class="finding-desc">${esc(f.description)}</div>
+      ${f.fix ? `<div class="finding-fix">Fix: ${esc(f.fix)}</div>` : ''}`;
+    list.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// ENTROPY LAB
+// ═══════════════════════════════════════════════
+function initHeatmap() {
+  const hm = document.getElementById('heatmap');
+  hm.innerHTML = '';
+  for (let i = 0; i < 256; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell';
+    cell.style.background = 'var(--bg-2)';
+    cell.title = `0x${i.toString(16).padStart(2, '0').toUpperCase()}: 0`;
+    hm.appendChild(cell);
+  }
+}
+initHeatmap();
+
+async function generateEntropy() {
+  const n = parseInt(document.getElementById('entropyBytes').value) || 256;
+  const bytes = new Uint8Array(n);
+  crypto.getRandomValues(bytes);
+  const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  document.getElementById('entropyHex').value = hex;
+  analyzeEntropyData(bytes);
+}
+
+function analyzeHex() {
+  const hex = document.getElementById('entropyHex').value.replace(/\s/g, '');
+  if (!hex || hex.length < 32) return;
+  const bytes = new Uint8Array(hex.match(/.{2}/g).map(h => parseInt(h, 16)));
+  analyzeEntropyData(bytes);
+}
+
+async function analyzeEntropyData(bytes) {
+  const n = bytes.length;
+  const counts = new Array(256).fill(0);
+  bytes.forEach(b => counts[b]++);
+
+  // Shannon entropy
+  let shannon = 0;
+  counts.forEach(c => { if (c > 0) { const p = c / n; shannon -= p * Math.log2(p); } });
+
+  // Min-entropy
+  const pMax = Math.max(...counts) / n;
+  const minEnt = pMax > 0 ? -Math.log2(pMax) : 0;
+
+  // Chi-squared
+  const expected = n / 256;
+  const chi = counts.reduce((s, c) => s + (c - expected) ** 2 / expected, 0);
+
+  // Serial correlation
+  let mean = bytes.reduce((a, b) => a + b, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) {
+    den += (bytes[i] - mean) ** 2;
+    if (i < n - 1) num += (bytes[i] - mean) * (bytes[i + 1] - mean);
+  }
+  const corr = den !== 0 ? num / den : 0;
+
+  const quality = Math.min(100, Math.round((shannon / 8) * 100));
+
+  // Update UI
+  document.getElementById('metricShannon').textContent = shannon.toFixed(3);
+  document.getElementById('metricMinEnt').textContent = minEnt.toFixed(3);
+  document.getElementById('metricChi').textContent = chi.toFixed(1);
+  document.getElementById('metricCorr').textContent = corr.toFixed(5);
+
+  document.getElementById('barShannon').style.width = `${(shannon / 8) * 100}%`;
+  document.getElementById('barMinEnt').style.width = `${(minEnt / 8) * 100}%`;
+  const chiNorm = Math.max(0, Math.min(100, 100 - Math.abs(chi - 255) / 255 * 100));
+  document.getElementById('barChi').style.width = `${chiNorm}%`;
+  const corrNorm = Math.max(0, (1 - Math.abs(corr)) * 100);
+  document.getElementById('barCorr').style.width = `${corrNorm}%`;
+
+  // Quality gauge
+  document.getElementById('qualityValue').textContent = quality;
+  const arc = document.getElementById('qualityArc');
+  const circ = 2 * Math.PI * 52;
+  arc.style.strokeDashoffset = circ - (quality / 100) * circ;
+  arc.style.stroke = quality > 80 ? 'var(--green)' : quality > 50 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('qualityValue').style.color = quality > 80 ? 'var(--green)' : quality > 50 ? 'var(--amber)' : 'var(--red)';
+
+  // Heatmap
+  const maxCount = Math.max(...counts, 1);
+  const cells = document.querySelectorAll('.heatmap-cell');
+  counts.forEach((c, i) => {
+    const intensity = c / maxCount;
+    const r = Math.round(0 + intensity * 0);
+    const g = Math.round(20 + intensity * 192);
+    const b = Math.round(30 + intensity * 225);
+    cells[i].style.background = `rgb(${r},${g},${b})`;
+    cells[i].title = `0x${i.toString(16).padStart(2, '0').toUpperCase()}: ${c}`;
+  });
+
+  state.entropy = quality;
+  document.getElementById('statEntropy').textContent = quality + '%';
+
+  // AI analysis
+  const hexStr = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  try {
+    const resp = await fetch(API_BASE + '/api/entropy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: hexStr })
+    });
+    if (!resp.ok) throw new Error();
+    const result = await resp.json();
+    document.getElementById('aiAnalysis').textContent = result.analysis;
+  } catch {
+    const assessment = quality > 85
+      ? `Excellent entropy quality (${quality}%). Shannon entropy of ${shannon.toFixed(3)} bits/byte indicates near-ideal randomness. The byte distribution appears uniform with no significant deviations. Min-entropy of ${minEnt.toFixed(3)} bits/byte confirms strong worst-case guarantees. Serial correlation of ${corr.toFixed(5)} shows no detectable patterns. This source is suitable for cryptographic key generation.`
+      : quality > 60
+      ? `Moderate entropy quality (${quality}%). Shannon entropy of ${shannon.toFixed(3)} bits/byte is acceptable but below ideal. Some byte distribution bias may be present. Consider additional conditioning through HKDF-SHA3-256 before using for key material.`
+      : `Low entropy quality (${quality}%). Shannon entropy of ${shannon.toFixed(3)} bits/byte indicates significant bias. This source should NOT be used for cryptographic purposes without extensive conditioning and entropy extraction via the Leftover Hash Lemma.`;
+    document.getElementById('aiAnalysis').textContent = `[Demo Mode]\n\n${assessment}`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// AI CHAT
+// ═══════════════════════════════════════════════
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+});
+
+function sendSuggestion(btn) {
+  chatInput.value = btn.textContent;
+  sendChat();
+  document.getElementById('chatSuggestions').style.display = 'none';
+}
+
+async function sendChat() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  document.getElementById('chatSuggestions').style.display = 'none';
+
+  appendMsg('user', text);
+  state.chats++;
+  updateDashStats();
+
+  const typingEl = document.createElement('div');
+  typingEl.className = 'msg ai';
+  typingEl.innerHTML = `
+    <div class="msg-avatar"><svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg></div>
+    <div class="msg-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+  chatMessages.appendChild(typingEl);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  let reply;
+  try {
+    const resp = await fetch(API_BASE + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+    if (!resp.ok) throw new Error();
+    const data = await resp.json();
+    reply = data.response;
+  } catch {
+    reply = getDemoReply(text);
+  }
+
+  typingEl.remove();
+  appendMsg('ai', reply);
+}
+
+function appendMsg(role, text) {
+  const el = document.createElement('div');
+  el.className = `msg ${role}`;
+  const avatar = role === 'ai'
+    ? '<svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>'
+    : '<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  el.innerHTML = `<div class="msg-avatar">${avatar}</div><div class="msg-bubble">${role === 'ai' ? renderMarkdown(text) : esc(text)}</div>`;
+  chatMessages.appendChild(el);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function getDemoReply(q) {
+  const ql = q.toLowerCase();
+  if (ql.includes('quantum') || ql.includes('post-quantum'))
+    return "**Post-quantum migration** is critical as quantum computers threaten current cryptography:\n\n1. **Key Exchange**: Replace ECDH with **CRYSTALS-Kyber** (ML-KEM) — NIST's chosen KEM standard\n2. **Signatures**: Replace ECDSA/RSA with **CRYSTALS-Dilithium** (ML-DSA) or **FALCON**\n3. **Hashing**: SHA-256 and SHA-3 are quantum-resistant (Grover's only halves security)\n4. **Symmetric**: AES-256 remains safe (256-bit → 128-bit effective against Grover's)\n\n**Action items:**\n- Inventory all asymmetric crypto in your codebase\n- Implement hybrid schemes (classical + PQ) during transition\n- Use `liboqs` or `pqcrypto` libraries\n- Test with NIST PQC reference implementations";
+  if (ql.includes('md5'))
+    return "**MD5 is cryptographically broken** and must never be used for security:\n\n- **Collision attacks**: Two different inputs producing the same hash can be found in **seconds** on a laptop\n- **Preimage attacks**: While theoretically 2^128, practical attacks reduce this significantly\n- **Rainbow tables**: MD5 password hashes are instantly reversible via precomputed tables\n\n**For password hashing**, use:\n- `bcrypt` (cost factor ≥ 12)\n- `scrypt` (N=2^14, r=8, p=1)\n- `argon2id` (best choice, won the PHC)\n\n**For integrity checks**, use:\n- `SHA-256` or `SHA-3-256`\n- `BLAKE2b` (faster than SHA-3)";
+  if (ql.includes('leftover hash') || ql.includes('lhl'))
+    return "The **Leftover Hash Lemma (LHL)** is an information-theoretic result guaranteeing secure randomness extraction:\n\n**Core idea**: Given a source with min-entropy H∞, we can extract `k = H∞ - 2·log(1/ε)` nearly-uniform bits using a universal hash function.\n\n**Formula**:\n```\nk_eff = max(0, ⌊n·H∞ - 2·log₂(1/ε)⌋)\noutput = UHF(seed, data, k_eff bits)\n```\n\nWhere `ε` is the **statistical distance** from uniform (we use ε = 2⁻¹²⁸ for 128-bit security).\n\n**In practice** (as in Project COSMO):\n1. Estimate H∞ using NIST SP 800-90B MCV estimator\n2. Compute extractable bits k_eff\n3. Apply SHAKE256 XOF as the universal hash\n4. Condition through HKDF-SHA3-256\n\nThe LHL gives us a **provable security guarantee** — the output is statistically indistinguishable from true randomness.";
+  if (ql.includes('key derivation') || ql.includes('kdf'))
+    return "**Key Derivation Best Practices**:\n\n**For passwords → keys:**\n- Use `Argon2id` (memory-hard, GPU-resistant)\n- Parameters: 64MB memory, 3 iterations, parallelism 4\n- Always use a unique 16+ byte salt per user\n\n**For keys → keys:**\n- Use `HKDF` (HMAC-based KDF, RFC 5869)\n- Extract phase: `PRK = HMAC(salt, input_key)`\n- Expand phase: `OKM = HMAC(PRK, info ∥ counter)`\n\n**Rules:**\n1. **Never reuse keys** across different purposes\n2. **Always use domain separation** (unique `info` parameter)\n3. **Minimum 256 bits** for post-quantum security\n4. **Rotate keys** on a defined schedule\n5. **Destroy key material** when no longer needed";
+  return "That's a great question about cryptographic security. In **demo mode**, I can provide guidance on:\n\n- **Post-quantum cryptography** (CRYSTALS-Kyber, Dilithium, FALCON)\n- **Secure hashing** (SHA-3, BLAKE2, Argon2)\n- **Key management** (HKDF, key rotation, HSMs)\n- **Code vulnerabilities** (timing attacks, padding oracles)\n- **Entropy & randomness** (NIST SP 800-90B, CTRBGs)\n\nConnect to the **Nebius Token Factory** API to unlock full Nemotron Ultra analysis capabilities. Set your `NEBIUS_API_KEY` environment variable and restart the server.";
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function renderMarkdown(text) {
+  return esc(text)
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/^(\d+)\. (.+)/gm, '<li>$2</li>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+function updateDashStats() {
+  document.getElementById('statScans').textContent = state.scans;
+  document.getElementById('statVulns').textContent = state.vulns;
+  document.getElementById('statChats').textContent = state.chats;
+}
+
+// Check API on load
+async function checkAPI() {
+  try {
+    const r = await fetch(API_BASE + '/api/health', { method: 'GET' });
+    if (r.ok) {
+      state.apiReady = true;
+      document.getElementById('statusText').textContent = 'Nemotron Ready';
+    } else throw new Error();
+  } catch {
+    document.getElementById('statusPill').classList.add('offline');
+    document.getElementById('statusText').textContent = 'Demo Mode';
+  }
+}
+checkAPI();
+</script>
+</body>
+</html>
