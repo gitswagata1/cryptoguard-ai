@@ -521,6 +521,93 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 .btn-demo:hover::after{transform:translateX(100%);transition:transform .6s}
 .btn-demo svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
 .dash-hero .btn-demo{margin-top:22px}
+
+/* ═══ HERO TAGLINE & PILLS ═══ */
+.hero-tagline{font-size:.92rem;color:var(--text-2);letter-spacing:.5px;font-weight:500;margin-bottom:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.hero-tagline .dot{width:4px;height:4px;border-radius:50%;background:var(--cyan);opacity:.5}
+.hero-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:18px}
+.hero-pill{padding:6px 16px;border-radius:20px;font-size:.72rem;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;border:1px solid var(--border);
+  background:var(--bg-glass);backdrop-filter:blur(8px);color:var(--text-2);transition:var(--transition)}
+.hero-pill:hover{border-color:var(--cyan);color:var(--cyan)}
+.hero-pill.accent{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
+
+/* ═══ HOW IT WORKS ═══ */
+.how-section{margin-bottom:28px}
+.how-section h3{font-size:.88rem;font-weight:700;margin-bottom:16px;text-align:center;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:10px}
+.how-section h3::before,.how-section h3::after{content:'';width:40px;height:1px;background:var(--border)}
+.how-steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:center}
+.how-step{text-align:center;padding:24px 16px;background:var(--bg-glass);border:1px solid var(--border);
+  border-radius:var(--radius);backdrop-filter:blur(10px);transition:var(--transition);position:relative}
+.how-step:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:var(--card-shadow-hover)}
+.how-step .step-num{width:36px;height:36px;border-radius:50%;background:var(--grad-1);color:white;
+  font-size:.82rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.how-step h4{font-size:.88rem;font-weight:700;margin-bottom:6px}
+.how-step p{font-size:.75rem;color:var(--text-2);line-height:1.5}
+.how-arrow{text-align:center;color:var(--cyan);font-size:1.4rem;opacity:.5;padding:0 4px}
+.how-arrow svg{width:24px;height:24px;stroke:var(--cyan);fill:none;stroke-width:2;
+  animation:arrow-pulse 2s ease-in-out infinite}
+
+/* ═══ PATENT ABSTRACT ═══ */
+.patent-abstract{padding:24px;background:linear-gradient(135deg,var(--cyan-dim),var(--purple-dim));
+  border:1px solid var(--border-hover);border-radius:var(--radius);margin-bottom:24px;position:relative;overflow:hidden}
+.patent-abstract::before{content:'INVENTION ABSTRACT';position:absolute;top:12px;right:16px;
+  font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);opacity:.5}
+.patent-abstract p{font-size:.88rem;color:var(--text-1);line-height:1.75;font-style:italic}
+.patent-abstract strong{color:var(--cyan);font-style:normal}
+
+/* ═══ INNOVATION CARD ═══ */
+.innovation-card{padding:20px 20px 20px 24px;background:var(--bg-2);border:1px solid var(--border);
+  border-left:3px solid transparent;border-image:var(--grad-1) 1;border-image-slice:1;
+  border-radius:0;margin-bottom:12px;transition:var(--transition)}
+.innovation-card:first-child{border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.innovation-card:last-child{border-radius:0 0 var(--radius-sm) var(--radius-sm);margin-bottom:0}
+.innovation-card:hover{background:var(--bg-3);transform:translateX(4px)}
+.innovation-card h5{font-size:.82rem;font-weight:700;color:var(--cyan);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.innovation-card h5 .inno-num{width:22px;height:22px;border-radius:50%;background:var(--grad-1);color:white;
+  font-size:.65rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.innovation-card p{font-size:.8rem;color:var(--text-2);line-height:1.6}
+
+/* ═══ PRIOR ART ═══ */
+.prior-art-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.prior-art-item{padding:16px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  transition:var(--transition)}
+.prior-art-item:hover{border-color:var(--border-hover)}
+.prior-art-item h5{font-size:.78rem;font-weight:700;color:var(--text-1);margin-bottom:4px}
+.prior-art-item .limitation{font-size:.72rem;color:var(--red);margin-bottom:6px;font-weight:600}
+.prior-art-item .our-approach{font-size:.72rem;color:var(--green);font-weight:600}
+
+/* ═══ CLAIM ITEM HOVER ═══ */
+.claim-item{position:relative;overflow:hidden}
+.claim-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(90deg,var(--cyan-dim),transparent);transition:width .3s ease;z-index:0}
+.claim-item:hover::before{width:100%}
+.claim-item>*{position:relative;z-index:1}
+
+/* ═══ FOOTER ═══ */
+.app-footer{padding:24px 28px;border-top:1px solid var(--border);background:var(--bg-glass);
+  backdrop-filter:blur(12px);text-align:center}
+.footer-inner{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
+.footer-brand{font-size:.78rem;color:var(--text-2);font-weight:500}
+.footer-brand strong{color:var(--text-1);font-weight:700}
+.footer-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.footer-badge{padding:4px 12px;border-radius:12px;font-size:.65rem;font-weight:700;
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);letter-spacing:.3px}
+.footer-badge.nvidia{border-color:rgba(118,185,0,.3);color:#76b900}
+.footer-badge.nebius{border-color:rgba(66,133,244,.3);color:#4285f4}
+.footer-badge.pq{border-color:rgba(124,58,237,.3);color:var(--purple)}
+.footer-sep{width:1px;height:16px;background:var(--border)}
+
+/* ═══ RESPONSIVE ADDITIONS ═══ */
+@media(max-width:900px){
+  .how-steps{grid-template-columns:1fr;gap:12px}
+  .how-arrow{transform:rotate(90deg)}
+  .prior-art-grid{grid-template-columns:1fr}
+  .hero-pills{gap:6px}
+  .footer-inner{flex-direction:column;gap:12px}
+}
 </style>
 </head>
 <body>
@@ -596,7 +683,17 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       </svg>
     </div>
     <h2>CryptoGuard AI</h2>
-    <p>AI-powered cryptographic security operations center. Scan code, test entropy, get post-quantum guidance — powered by NVIDIA Nemotron.</p>
+    <div class="hero-tagline">
+      <span>Nebius</span><span class="dot"></span><span>NVIDIA Nemotron</span><span class="dot"></span><span>Post-Quantum Ready</span>
+    </div>
+    <p>AI-powered cryptographic security operations center. Scan code for vulnerabilities, analyze entropy quality, and get post-quantum migration guidance — all in one platform.</p>
+    <div class="hero-pills">
+      <span class="hero-pill accent">Nemotron Ultra 253B</span>
+      <span class="hero-pill accent">Nemotron Nano 8B</span>
+      <span class="hero-pill">NIST SP 800-90B</span>
+      <span class="hero-pill">10-Class Vulnerability Taxonomy</span>
+      <span class="hero-pill">Post-Quantum Migration</span>
+    </div>
     <button class="btn-demo" onclick="runAutoDemo()" id="demoBtnHero">
       <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       Run Full Demo
@@ -623,6 +720,29 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       <div class="stat-icon" style="background:linear-gradient(135deg,var(--purple),var(--cyan))"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
       <div class="stat-value" style="color:var(--purple)" id="statChats">0</div>
       <div class="stat-label">AI Queries</div>
+    </div>
+  </div>
+
+  <div class="how-section">
+    <h3>How It Works</h3>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <h4>Paste Your Code</h4>
+        <p>Drop in source code in Python, JavaScript, Go, Java, or Rust</p>
+      </div>
+      <div class="how-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <h4>AI Analyzes</h4>
+        <p>Nemotron Ultra 253B scans for 10+ vulnerability classes with deep reasoning</p>
+      </div>
+      <div class="how-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <h4>Get Fixes</h4>
+        <p>Receive severity-ranked findings with specific code fixes and PQ migration paths</p>
+      </div>
     </div>
   </div>
 
@@ -820,65 +940,135 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   </div>
 </section>
 
-<!-- ════════ ARCHITECTURE ════════ -->
+<!-- ════════ ARCHITECTURE & PATENT ════════ -->
 <section class="page" id="page-arch">
   <div class="arch-hero">
     <h2 class="text-gradient">Architecture & Patent Claims</h2>
-    <p>Post-Quantum Cryptographic Security Analysis Pipeline — System Architecture and Novel Contributions</p>
+    <p>Post-Quantum Cryptographic Security Analysis Pipeline — System Architecture, Novel Contributions, and Prior Art Differentiation</p>
   </div>
 
+  <!-- INVENTION ABSTRACT -->
+  <div class="patent-abstract">
+    <p>A system and method for <strong>AI-driven cryptographic security analysis</strong> comprising a multi-model inference pipeline that routes security queries to task-specific large language models hosted on cloud GPU infrastructure. The system implements a <strong>10-class cryptographic vulnerability taxonomy</strong> with automated detection and remediation, a <strong>NIST SP 800-90B compliant entropy analysis engine</strong> with Leftover Hash Lemma extraction and HKDF-SHA3-256 conditioning, and a <strong>post-quantum migration recommender</strong> that identifies quantum-vulnerable algorithms and generates specific replacement paths using CRYSTALS-Kyber (ML-KEM), CRYSTALS-Dilithium (ML-DSA), and FALCON. The invention uniquely combines <strong>deep code reasoning</strong> via a 253-billion-parameter model with <strong>real-time entropy assessment</strong> via an 8-billion-parameter model, orchestrated through an intelligent task classifier.</p>
+  </div>
+
+  <!-- SYSTEM PIPELINE -->
   <div class="card" style="margin-bottom:24px">
     <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">System Pipeline</h3>
     <div class="arch-flow">
       <div class="arch-node"><h5>User Input</h5><p>Source code, hex data, or natural language query</p></div>
       <div class="arch-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-      <div class="arch-node"><h5>Classifier</h5><p>Route to Scanner, Entropy Lab, or Chat agent</p></div>
+      <div class="arch-node"><h5>Task Classifier</h5><p>Route to Scanner, Entropy Lab, or Chat agent</p></div>
       <div class="arch-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-      <div class="arch-node"><h5>Nemotron Ultra</h5><p>253B-parameter model for deep security analysis</p></div>
+      <div class="arch-node"><h5>Nemotron Ultra 253B</h5><p>Deep vulnerability analysis &amp; reasoning</p></div>
       <div class="arch-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-      <div class="arch-node"><h5>NIST Engine</h5><p>SP 800-90B entropy estimation, LHL extraction</p></div>
+      <div class="arch-node"><h5>NIST Engine</h5><p>SP 800-90B estimation + LHL extraction + HKDF</p></div>
       <div class="arch-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-      <div class="arch-node"><h5>Results</h5><p>Severity-ranked findings, metrics, recommendations</p></div>
+      <div class="arch-node"><h5>Results</h5><p>Severity-ranked findings, metrics, PQ migration paths</p></div>
     </div>
+  </div>
+
+  <!-- PATENT CLAIMS (EXPANDED) -->
+  <div class="card" style="margin-bottom:24px">
+    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Patent Claims — Novel Contributions</h3>
+    <ul class="claim-list">
+      <li class="claim-item"><span class="claim-num">1</span>
+        <span class="claim-text"><strong>Multi-model AI routing architecture</strong> for cryptographic security analysis, wherein a task classifier routes queries to task-specific LLMs — Nemotron Ultra (253B parameters) for deep code vulnerability scanning and conversational reasoning, and Nemotron Nano (8B parameters) for real-time entropy quality assessment — optimizing both accuracy and latency</span></li>
+      <li class="claim-item"><span class="claim-num">2</span>
+        <span class="claim-text"><strong>10-class cryptographic vulnerability taxonomy</strong> with automated detection comprising: (i) hardcoded secrets, (ii) weak hash functions (MD5/SHA-1), (iii) insecure random number generation, (iv) deprecated symmetric ciphers (DES/3DES), (v) unsafe block cipher modes (ECB), (vi) improper padding schemes, (vii) timing-unsafe comparisons, (viii) nonce/IV reuse, (ix) insufficient key lengths, and (x) missing authenticated encryption (AEAD)</span></li>
+      <li class="claim-item"><span class="claim-num">3</span>
+        <span class="claim-text"><strong>NIST SP 800-90B entropy analysis pipeline</strong> integrated with AI interpretation — computing Shannon entropy, Most Common Value (MCV) min-entropy estimation, chi-squared goodness-of-fit, and serial correlation coefficient, then feeding statistical metrics to an LLM for natural-language quality assessment and actionable recommendations</span></li>
+      <li class="claim-item"><span class="claim-num">4</span>
+        <span class="claim-text"><strong>Leftover Hash Lemma (LHL) extraction engine</strong> that computes extractable key bits k_eff = max(0, floor(n * H_inf - 2 * log2(1/epsilon))) from estimated min-entropy sources and applies SHAKE256 XOF as a near-universal hash function for provably secure randomness extraction</span></li>
+      <li class="claim-item"><span class="claim-num">5</span>
+        <span class="claim-text"><strong>HKDF-SHA3-256 conditioning pipeline</strong> implementing a two-stage Extract-then-Expand key derivation per RFC 5869 and NIST SP 800-90C, conditioning extracted entropy through HMAC-based derivation with domain-separation info strings for cryptographic key material generation</span></li>
+      <li class="claim-item"><span class="claim-num">6</span>
+        <span class="claim-text"><strong>Post-quantum migration recommender</strong> that automatically identifies quantum-vulnerable algorithms (RSA, ECDH, ECDSA, DSA) in source code and generates specific replacement paths using NIST-standardized post-quantum primitives: CRYSTALS-Kyber (ML-KEM) for key encapsulation, CRYSTALS-Dilithium (ML-DSA) for digital signatures, and FALCON for lattice-based signatures</span></li>
+      <li class="claim-item"><span class="claim-num">7</span>
+        <span class="claim-text"><strong>Unified cryptographic security operations center</strong> combining code vulnerability scanning, entropy quality analysis, and conversational AI guidance in a single-page application with real-time dashboard metrics, severity-ranked findings with inline fix recommendations, and byte-level entropy heatmap visualization</span></li>
+    </ul>
   </div>
 
   <div class="arch-grid">
+    <!-- TECHNICAL INNOVATIONS -->
     <div class="card">
-      <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Novel Contributions (Patent Claims)</h3>
-      <ul class="claim-list">
-        <li class="claim-item"><span class="claim-num">1</span>
-          <span class="claim-text"><strong>Multi-model AI routing</strong> for cryptographic analysis — Nemotron Ultra (253B) for deep code scanning and reasoning, Nemotron Nano (8B) for real-time entropy quality assessment</span></li>
-        <li class="claim-item"><span class="claim-num">2</span>
-          <span class="claim-text"><strong>NIST SP 800-90B entropy pipeline</strong> integrated with AI interpretation — combining MCV min-entropy estimation, Leftover Hash Lemma extraction, and natural-language quality reporting</span></li>
-        <li class="claim-item"><span class="claim-num">3</span>
-          <span class="claim-text"><strong>10-class cryptographic vulnerability taxonomy</strong> with automated detection — hardcoded secrets, weak hash functions, insecure RNG, deprecated ciphers, unsafe modes, improper KDF, timing vulnerabilities, nonce reuse, insufficient key length, missing AEAD</span></li>
-        <li class="claim-item"><span class="claim-num">4</span>
-          <span class="claim-text"><strong>Post-quantum migration recommender</strong> — automated detection of quantum-vulnerable algorithms with specific replacement recommendations (CRYSTALS-Kyber, Dilithium, FALCON)</span></li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Standards Compliance</h3>
-      <div class="standards-grid">
-        <div class="standard-card"><h5>NIST SP 800-90B</h5><p>Entropy source validation & min-entropy estimation</p></div>
-        <div class="standard-card"><h5>NIST SP 800-90C</h5><p>Conditioning component design (HKDF)</p></div>
-        <div class="standard-card"><h5>FIPS 202</h5><p>SHA-3 & SHAKE256 XOF standard</p></div>
-        <div class="standard-card"><h5>NIST PQC</h5><p>Post-quantum algorithm recommendations</p></div>
-        <div class="standard-card"><h5>OWASP A02</h5><p>Cryptographic failures detection</p></div>
-        <div class="standard-card"><h5>RFC 5869</h5><p>HKDF key derivation specification</p></div>
+      <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Technical Innovations</h3>
+      <div class="innovation-card">
+        <h5><span class="inno-num">1</span> Dual-Model Inference Pipeline</h5>
+        <p>Routes security tasks to the optimal model based on computational complexity. Code scanning requires deep reasoning (253B params), while entropy analysis needs sub-second feedback (8B params). Both models share the Nebius Token Factory API with OpenAI-compatible routing.</p>
       </div>
-      <div style="margin-top:20px;padding:16px;background:var(--cyan-dim);border-radius:var(--radius-sm);border:1px solid rgba(0,212,255,.15)">
-        <p style="font-size:.82rem;color:var(--text-2);line-height:1.6">
-          <strong style="color:var(--cyan)">Multi-Model Architecture:</strong>
-          The system routes queries to the optimal model based on task complexity.
-          Code vulnerability scanning and conversational analysis use <strong style="color:var(--text-1)">Nemotron Ultra (253B parameters)</strong>
-          for deep reasoning, while real-time entropy assessment uses <strong style="color:var(--text-1)">Nemotron Nano (8B parameters)</strong>
-          for sub-second response times. Both run on <strong style="color:var(--text-1)">Nebius AI Cloud</strong> infrastructure.
-        </p>
+      <div class="innovation-card">
+        <h5><span class="inno-num">2</span> Statistical + AI Hybrid Analysis</h5>
+        <p>Entropy assessment combines deterministic NIST SP 800-90B statistical tests (Shannon, MCV, chi-squared, serial correlation) with LLM interpretation, bridging the gap between mathematical rigor and developer-friendly reporting.</p>
+      </div>
+      <div class="innovation-card">
+        <h5><span class="inno-num">3</span> Provable Extraction via LHL</h5>
+        <p>Implements the Leftover Hash Lemma for provably secure randomness extraction from imperfect entropy sources, computing extractable bits based on min-entropy estimates and applying SHAKE256 XOF as a near-universal hash.</p>
+      </div>
+      <div class="innovation-card">
+        <h5><span class="inno-num">4</span> Real-Time Byte Distribution Heatmap</h5>
+        <p>256-cell visual heatmap rendering byte frequency distribution in real-time, enabling instant visual detection of bias patterns, stuck bits, and non-uniformity in random number generators.</p>
+      </div>
+    </div>
+
+    <!-- STANDARDS + PRIOR ART -->
+    <div>
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Standards Compliance</h3>
+        <div class="standards-grid">
+          <div class="standard-card"><h5>NIST SP 800-90B</h5><p>Entropy source validation</p></div>
+          <div class="standard-card"><h5>NIST SP 800-90C</h5><p>Conditioning (HKDF)</p></div>
+          <div class="standard-card"><h5>FIPS 202</h5><p>SHA-3 / SHAKE256 XOF</p></div>
+          <div class="standard-card"><h5>NIST PQC</h5><p>Post-quantum standards</p></div>
+          <div class="standard-card"><h5>OWASP A02</h5><p>Crypto failures detection</p></div>
+          <div class="standard-card"><h5>RFC 5869</h5><p>HKDF specification</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Prior Art Differentiation</h3>
+        <p style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;line-height:1.5">CryptoGuard AI addresses critical limitations of existing security tools:</p>
+        <div class="prior-art-grid">
+          <div class="prior-art-item">
+            <h5>Snyk / Semgrep</h5>
+            <div class="limitation">Limited to pattern-matching rules</div>
+            <div class="our-approach">CryptoGuard uses 253B-param LLM for semantic reasoning</div>
+          </div>
+          <div class="prior-art-item">
+            <h5>SonarQube</h5>
+            <div class="limitation">No entropy analysis or PQ guidance</div>
+            <div class="our-approach">Integrated NIST entropy lab + PQ migration paths</div>
+          </div>
+          <div class="prior-art-item">
+            <h5>NIST ENT / Dieharder</h5>
+            <div class="limitation">Statistical tools only, no AI interpretation</div>
+            <div class="our-approach">AI-powered natural language quality reporting</div>
+          </div>
+          <div class="prior-art-item">
+            <h5>GitHub Copilot</h5>
+            <div class="limitation">General coding assistant, no crypto focus</div>
+            <div class="our-approach">Purpose-built 10-class crypto vulnerability taxonomy</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card">
+  <!-- MULTI-MODEL DETAIL -->
+  <div class="card" style="margin-top:24px">
+    <div style="padding:16px;background:var(--cyan-dim);border-radius:var(--radius-sm);border:1px solid rgba(0,212,255,.15)">
+      <p style="font-size:.82rem;color:var(--text-2);line-height:1.6">
+        <strong style="color:var(--cyan)">Multi-Model Architecture:</strong>
+        The system routes queries to the optimal model based on task complexity.
+        Code vulnerability scanning and conversational analysis use <strong style="color:var(--text-1)">Nemotron Ultra (253B parameters)</strong>
+        for deep reasoning, while real-time entropy assessment uses <strong style="color:var(--text-1)">Nemotron Nano (8B parameters)</strong>
+        for sub-second response times. Both run on <strong style="color:var(--text-1)">Nebius AI Cloud</strong> (Token Factory) infrastructure
+        via an OpenAI-compatible API endpoint.
+      </p>
+    </div>
+  </div>
+
+  <!-- AUTHOR / HACKATHON FOOTER -->
+  <div class="card" style="margin-top:24px">
     <div class="powered-section">
       <div class="powered-badge"><strong>Swagata Banerjee</strong>&nbsp;· VIT Vellore · BCSE324L</div>
       <div class="powered-badge"><strong>Nebius x NVIDIA</strong>&nbsp;Global AI Hackathon 2026</div>
@@ -888,6 +1078,20 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 </section>
 
 </main>
+<footer class="app-footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><strong>Swagata Banerjee</strong> · VIT Vellore · BCSE324L</div>
+    <div class="footer-sep"></div>
+    <div class="footer-badges">
+      <span class="footer-badge nvidia">NVIDIA Nemotron</span>
+      <span class="footer-badge nebius">Nebius AI Cloud</span>
+      <span class="footer-badge pq">Post-Quantum</span>
+      <span class="footer-badge">NIST SP 800-90B</span>
+    </div>
+    <div class="footer-sep"></div>
+    <div class="footer-brand">Nebius × NVIDIA Global AI Hackathon 2026 · <strong>Best Apps and Agents</strong></div>
+  </div>
+</footer>
 </div>
 </div>
 
