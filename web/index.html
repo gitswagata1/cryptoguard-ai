@@ -1206,7 +1206,7 @@ updateThemeIcon(savedTheme);
 // ═══════════════════════════════════════════════
 const API_BASE = window.location.origin;
 const state = { scans: 0, vulns: 0, entropy: null, chats: 0 };
-const PAGE_TITLES = { dashboard:'Dashboard', scanner:'Code Scanner', entropy:'Entropy Lab', chat:'AI Chat', arch:'Architecture' };
+const PAGE_TITLES = { dashboard:'Dashboard', scanner:'Code Scanner', entropy:'Entropy Lab', chat:'AI Chat', arch:'Architecture & Patent Claims' };
 
 const DEMO_FINDINGS = [
   {severity:"critical",title:"Hardcoded Secret Key",description:"SECRET_KEY is hardcoded in source code. This will be exposed in version control and compiled artifacts.",line:4,fix:"Use environment variables: os.environ.get('SECRET_KEY')"},
