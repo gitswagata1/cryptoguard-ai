@@ -497,6 +497,30 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 .text-gradient{background:var(--grad-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 ::selection{background:rgba(0,212,255,.25);color:var(--text-1)}
 [data-theme="light"] ::selection{background:rgba(0,136,204,.2)}
+
+/* ═══ DEMO BANNER ═══ */
+.demo-banner{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:100;
+  background:var(--bg-glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border-hover);border-radius:16px;padding:12px 24px;
+  display:flex;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.3);
+  animation:banner-in .5s cubic-bezier(.4,0,.2,1)}
+.demo-banner.hide{animation:banner-out .3s ease forwards}
+@keyframes banner-in{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes banner-out{to{opacity:0;transform:translateX(-50%) translateY(20px)}}
+.demo-step{font-size:.85rem;font-weight:600;color:var(--text-1)}
+.demo-step span{color:var(--cyan);font-family:var(--font-mono);font-size:.78rem}
+.demo-progress{width:120px;height:4px;background:var(--bg-2);border-radius:2px;overflow:hidden}
+.demo-progress-fill{height:100%;background:var(--grad-1);border-radius:2px;transition:width .4s ease}
+.btn-demo{padding:12px 28px;font-size:.95rem;border-radius:12px;font-weight:700;
+  background:var(--grad-1);color:white;border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,180,255,.3);transition:var(--transition);
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:10px}
+.btn-demo:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,180,255,.4)}
+.btn-demo::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  transform:translateX(-100%)}
+.btn-demo:hover::after{transform:translateX(100%);transition:transform .6s}
+.btn-demo svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.dash-hero .btn-demo{margin-top:22px}
 </style>
 </head>
 <body>
@@ -573,6 +597,10 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
     </div>
     <h2>CryptoGuard AI</h2>
     <p>AI-powered cryptographic security operations center. Scan code, test entropy, get post-quantum guidance — powered by NVIDIA Nemotron.</p>
+    <button class="btn-demo" onclick="runAutoDemo()" id="demoBtnHero">
+      <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Run Full Demo
+    </button>
   </div>
 
   <div class="stats-row">
@@ -1255,6 +1283,97 @@ async function checkAPI(){try{const r=await fetch(API_BASE+'/api/health');
   }catch{document.getElementById('statusPill').classList.add('offline');
   document.getElementById('statusText').textContent='Demo Mode';}}
 checkAPI();
+
+// ═══════════════════════════════════════════════
+// AUTO-DEMO WALKTHROUGH
+// ═══════════════════════════════════════════════
+let demoRunning = false;
+function demoBanner(step, total, label) {
+  let b = document.getElementById('demoBanner');
+  if (!b) {
+    b = document.createElement('div'); b.id = 'demoBanner'; b.className = 'demo-banner';
+    b.innerHTML = '<div class="demo-step"></div><div class="demo-progress"><div class="demo-progress-fill"></div></div><button style="background:none;border:none;color:var(--text-2);cursor:pointer;font-size:1.1rem" onclick="stopDemo()">&#x2715;</button>';
+    document.body.appendChild(b);
+  }
+  b.classList.remove('hide');
+  b.querySelector('.demo-step').innerHTML = `Step <span>${step}/${total}</span> &mdash; ${label}`;
+  b.querySelector('.demo-progress-fill').style.width = `${(step/total)*100}%`;
+}
+function hideBanner() {
+  const b = document.getElementById('demoBanner');
+  if (b) { b.classList.add('hide'); setTimeout(() => b.remove(), 400); }
+}
+function stopDemo() { demoRunning = false; hideBanner(); }
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runAutoDemo() {
+  if (demoRunning) return;
+  demoRunning = true;
+  const heroBtn = document.getElementById('demoBtnHero');
+  if (heroBtn) heroBtn.disabled = true;
+  const STEPS = 4;
+
+  // Step 1: Dashboard overview
+  demoBanner(1, STEPS, 'Dashboard Overview');
+  showPage('dashboard');
+  await wait(2000);
+  if (!demoRunning) return cleanup();
+
+  // Step 2: Code Scanner
+  demoBanner(2, STEPS, 'Scanning Vulnerable Code');
+  showPage('scanner');
+  await wait(600);
+  loadExample();
+  await wait(800);
+  if (!demoRunning) return cleanup();
+  await scanCode();
+  await wait(2500);
+  if (!demoRunning) return cleanup();
+
+  // Step 3: Entropy Lab
+  demoBanner(3, STEPS, 'Analyzing Entropy Quality');
+  showPage('entropy');
+  await wait(600);
+  if (!demoRunning) return cleanup();
+  await generateEntropy();
+  await wait(2500);
+  if (!demoRunning) return cleanup();
+
+  // Step 4: AI Chat
+  demoBanner(4, STEPS, 'AI Chat — Post-Quantum Guidance');
+  showPage('chat');
+  await wait(600);
+  const chatIn = document.getElementById('chatInput');
+  const question = 'How do I make my code quantum-safe?';
+  chatIn.value = '';
+  for (let i = 0; i < question.length; i++) {
+    chatIn.value += question[i];
+    await wait(30);
+    if (!demoRunning) return cleanup();
+  }
+  await wait(400);
+  await sendChat();
+  await wait(3000);
+  if (!demoRunning) return cleanup();
+
+  // Done — return to dashboard
+  showPage('dashboard');
+  demoBanner(STEPS, STEPS, 'Demo Complete!');
+  await wait(2000);
+  hideBanner();
+  cleanup();
+}
+
+function cleanup() {
+  demoRunning = false;
+  const heroBtn = document.getElementById('demoBtnHero');
+  if (heroBtn) heroBtn.disabled = false;
+  hideBanner();
+}
+
+if (new URLSearchParams(window.location.search).has('demo')) {
+  setTimeout(runAutoDemo, 800);
+}
 </script>
 </body>
 </html>
