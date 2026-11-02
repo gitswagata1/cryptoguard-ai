@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - CG_REDIS_URL=redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: services/ingestion/Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MQTT_BROKER=${MQTT_BROKER:-mqtt://localhost:1883}
+      - METRICS_PORT=9090
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  extraction:
+    build:
+      context: .
+      dockerfile: services/extraction/Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - INPUT_STREAM=cosmo:raw_timestamps
+      - OUTPUT_STREAM=cosmo:extracted_entropy
+      - BATCH_SIZE=1024
+      - METRICS_PORT=9091
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  mixing-pool:
+    build:
+      context: .
+      dockerfile: services/mixing-pool/Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - INPUT_STREAM=cosmo:extracted_entropy
+      - OUTPUT_STREAM=cosmo:conditioned_entropy
+      - METRICS_PORT=9092
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  anchoring:
+    build:
+      context: .
+      dockerfile: services/anchoring/Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - INPUT_STREAM=cosmo:conditioned_entropy
+      - LEDGER_PATH=/data/ledger.jsonl
+      - METRICS_PORT=9093
+    volumes:
+      - anchoring-data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis-data:
+  anchoring-data:

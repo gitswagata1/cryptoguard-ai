@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cosmo-cryptoguard"
+version = "1.0.0"
+description = "AI-Driven Cryptographic Security Analysis with NIST SP 800-90B Entropy Pipeline and Blockchain Anchoring"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Swagata Banerjee", email = "swagata.banerjee2023@vitstudent.ac.in"}]
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "openai>=1.50.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.5.0",
+    "redis>=5.0.3",
+    "numpy>=1.26.4",
+    "scipy>=1.13.0",
+    "cryptography>=42.0.5",
+    "prometheus-client>=0.20.0",
+    "grpcio>=1.62.1",
+    "paho-mqtt>=2.0.0",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.27.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["src"]

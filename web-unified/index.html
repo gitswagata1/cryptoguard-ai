@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoGuard AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;--surface:#111827;--surface2:#1f2937;--border:#374151;
+  --text:#e5e7eb;--text-dim:#9ca3af;--accent:#3b82f6;--accent-glow:#2563eb;
+  --green:#10b981;--amber:#f59e0b;--red:#ef4444;--purple:#8b5cf6;
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code','Fira Code','JetBrains Mono',monospace;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text)}
+a{color:var(--accent);text-decoration:none}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:56px;background:var(--surface);
+  border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:100;
+}
+.topbar h1{font-size:18px;font-weight:600;letter-spacing:-0.3px}
+.topbar h1 span{color:var(--accent)}
+.mode-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.3);
+}
+.mode-badge.cloud{
+  background:rgba(16,185,129,0.15);color:var(--green);border-color:rgba(16,185,129,0.3);
+}
+.mode-badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+nav{
+  display:flex;gap:4px;padding:0 24px;height:44px;align-items:center;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  position:fixed;top:56px;left:0;right:0;z-index:99;
+}
+nav button{
+  padding:6px 16px;border:none;background:transparent;color:var(--text-dim);
+  font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;transition:all .15s;
+}
+nav button:hover{color:var(--text);background:var(--surface2)}
+nav button.active{color:var(--accent);background:rgba(59,130,246,0.1)}
+nav button.hidden{display:none}
+
+.main{padding:120px 24px 24px;max-width:1200px;margin:0 auto}
+.page{display:none}
+.page.active{display:block}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:20px;margin-bottom:16px;
+}
+.card h2{font-size:15px;font-weight:600;margin-bottom:12px;color:var(--text)}
+.card h3{font-size:13px;font-weight:500;margin-bottom:8px;color:var(--text-dim)}
+
+input,textarea,select{
+  width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font);font-size:14px;
+  outline:none;transition:border .15s;
+}
+input:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;font-family:var(--mono);font-size:13px;min-height:180px}
+
+button.primary{
+  padding:10px 20px;background:var(--accent);color:#fff;border:none;
+  border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;
+}
+button.primary:hover{background:var(--accent-glow)}
+button.primary:disabled{opacity:.5;cursor:not-allowed}
+
+.flex{display:flex;gap:16px}
+.flex>*{flex:1}
+
+.results-area{
+  min-height:60px;padding:16px;background:var(--bg);border-radius:8px;
+  border:1px solid var(--border);margin-top:12px;font-size:13px;line-height:1.6;
+}
+.results-area.empty{color:var(--text-dim);text-align:center;padding:32px}
+
+.finding{
+  padding:12px;background:var(--surface2);border-radius:8px;margin-bottom:8px;
+  border-left:3px solid var(--border);
+}
+.finding.critical{border-left-color:var(--red)}
+.finding.high{border-left-color:#f97316}
+.finding.medium{border-left-color:var(--amber)}
+.finding.low{border-left-color:var(--green)}
+.finding .title{font-weight:600;font-size:13px;margin-bottom:4px}
+.finding .desc{font-size:12px;color:var(--text-dim);margin-bottom:4px}
+.finding .meta{font-size:11px;color:var(--text-dim);font-family:var(--mono)}
+.finding .fix{
+  font-size:12px;color:var(--green);margin-top:6px;padding:6px 10px;
+  background:rgba(16,185,129,0.08);border-radius:4px;
+}
+
+.score-ring{
+  width:80px;height:80px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:22px;font-weight:700;margin:0 auto 8px;
+}
+.score-ring.good{background:rgba(16,185,129,0.15);color:var(--green);border:3px solid var(--green)}
+.score-ring.warn{background:rgba(245,158,11,0.15);color:var(--amber);border:3px solid var(--amber)}
+.score-ring.bad{background:rgba(239,68,68,0.15);color:var(--red);border:3px solid var(--red)}
+
+.chat-messages{
+  height:400px;overflow-y:auto;padding:16px;background:var(--bg);
+  border-radius:8px;border:1px solid var(--border);margin-bottom:12px;
+}
+.chat-msg{margin-bottom:12px;display:flex;gap:10px}
+.chat-msg .avatar{
+  width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;
+}
+.chat-msg.user .avatar{background:var(--accent);color:#fff}
+.chat-msg.ai .avatar{background:var(--purple);color:#fff}
+.chat-msg .bubble{
+  padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;max-width:80%;
+}
+.chat-msg.user .bubble{background:rgba(59,130,246,0.12);color:var(--text)}
+.chat-msg.ai .bubble{background:var(--surface2);color:var(--text)}
+.chat-msg.error .bubble{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+.chat-input-row{display:flex;gap:8px}
+.chat-input-row input{flex:1}
+
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.metric-card{
+  padding:14px;background:var(--surface2);border-radius:8px;text-align:center;
+}
+.metric-card .value{font-size:20px;font-weight:700;font-family:var(--mono)}
+.metric-card .label{font-size:11px;color:var(--text-dim);margin-top:4px}
+
+.pipeline-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.pipeline-stage{
+  padding:16px;background:var(--surface2);border-radius:8px;text-align:center;
+  border:1px solid var(--border);position:relative;
+}
+.pipeline-stage .stage-name{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+.pipeline-stage .stage-count{font-size:24px;font-weight:700;font-family:var(--mono);margin:8px 0 4px}
+.pipeline-stage .stage-rate{font-size:11px;color:var(--green)}
+.pipeline-stage::after{
+  content:'\2192';position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  color:var(--text-dim);font-size:18px;
+}
+.pipeline-stage:last-child::after{display:none}
+
+.event-feed{
+  height:260px;overflow-y:auto;padding:12px;background:var(--bg);
+  border-radius:8px;border:1px solid var(--border);font-family:var(--mono);font-size:12px;
+}
+.event-feed .event{padding:4px 0;border-bottom:1px solid var(--border);display:flex;gap:10px}
+.event-feed .event .ts{color:var(--text-dim);flex-shrink:0}
+.event-feed .event .stream{color:var(--accent);flex-shrink:0;width:100px}
+
+.error-banner{
+  padding:12px 16px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);
+  border-radius:8px;color:var(--red);font-size:13px;display:flex;align-items:center;
+  gap:8px;margin-bottom:12px;
+}
+.error-banner button{
+  margin-left:auto;padding:4px 12px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.3);
+  border-radius:6px;color:var(--red);font-size:12px;cursor:pointer;
+}
+
+.spinner{
+  display:inline-block;width:16px;height:16px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.quality-bar{
+  height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:6px;
+}
+.quality-bar .fill{height:100%;border-radius:3px;transition:width .3s}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Crypto<span>Guard</span> AI</h1>
+  <div class="mode-badge" id="modeBadge">
+    <span class="dot"></span>
+    <span id="modeText">Connecting...</span>
+  </div>
+</div>
+
+<nav>
+  <button class="active" data-page="scanner">Scanner</button>
+  <button data-page="entropy">Entropy</button>
+  <button data-page="chat">Chat</button>
+  <button data-page="pipeline" id="pipelineNav" class="hidden">Pipeline</button>
+</nav>
+
+<div class="main">
+  <!-- Scanner Page -->
+  <div class="page active" id="page-scanner">
+    <div class="card">
+      <h2>Cryptographic Vulnerability Scanner</h2>
+      <div class="flex" style="margin-bottom:12px">
+        <select id="scanLang" style="max-width:180px">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="java">Java</option>
+          <option value="go">Go</option>
+          <option value="c">C/C++</option>
+          <option value="rust">Rust</option>
+        </select>
+      </div>
+      <textarea id="scanCode" placeholder="Paste code to analyze for cryptographic vulnerabilities..."></textarea>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <button class="primary" id="scanBtn" onclick="scanCode()">Scan Code</button>
+        <span id="scanStatus" style="font-size:12px;color:var(--text-dim)"></span>
+      </div>
+    </div>
+    <div id="scanResults"></div>
+  </div>
+
+  <!-- Entropy Page -->
+  <div class="page" id="page-entropy">
+    <div class="card">
+      <h2>Entropy Analysis Engine</h2>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px">
+        Provide hex-encoded data for NIST SP 800-90B compliant entropy assessment with LHL extraction.
+      </p>
+      <textarea id="entropyData" style="min-height:120px;font-family:var(--mono)" placeholder="Hex-encoded entropy data (e.g. a3f2b1c4...)"></textarea>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <button class="primary" id="entropyBtn" onclick="analyzeEntropy()">Analyze Entropy</button>
+        <button class="primary" style="background:var(--surface2);border:1px solid var(--border)" onclick="generateRandomData()">Generate Random Sample</button>
+        <span id="entropyStatus" style="font-size:12px;color:var(--text-dim)"></span>
+      </div>
+    </div>
+    <div id="entropyResults"></div>
+  </div>
+
+  <!-- Chat Page -->
+  <div class="page" id="page-chat">
+    <div class="card">
+      <h2>Cryptography Assistant</h2>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg ai">
+          <div class="avatar">AI</div>
+          <div class="bubble">CryptoGuard AI ready. Ask about cryptographic best practices, vulnerability analysis, entropy assessment, post-quantum migration, or any security topic.</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask about cryptography..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="primary" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Page -->
+  <div class="page" id="page-pipeline">
+    <div class="card">
+      <h2>COSMO Entropy Pipeline</h2>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">
+        Real-time monitoring of the entropy ingestion, extraction, conditioning, and anchoring pipeline via WebSocket.
+      </p>
+      <div class="pipeline-grid" id="pipelineStages">
+        <div class="pipeline-stage">
+          <div class="stage-name">Ingestion</div>
+          <div class="stage-count" id="stageIngestion">0</div>
+          <div class="stage-rate" id="rateIngestion">--</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-name">Extraction</div>
+          <div class="stage-count" id="stageExtraction">0</div>
+          <div class="stage-rate" id="rateExtraction">--</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-name">Conditioning</div>
+          <div class="stage-count" id="stageConditioning">0</div>
+          <div class="stage-rate" id="rateConditioning">--</div>
+        </div>
+        <div class="pipeline-stage">
+          <div class="stage-name">Anchoring</div>
+          <div class="stage-count" id="stageAnchoring">0</div>
+          <div class="stage-rate" id="rateAnchoring">--</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex">
+      <div class="card" style="flex:2">
+        <h3>Event Feed</h3>
+        <div class="event-feed" id="eventFeed">
+          <div style="color:var(--text-dim);text-align:center;padding:40px 0">
+            Waiting for pipeline connection...
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>Pipeline Status</h3>
+        <div id="pipelineStatus">
+          <div class="metric-card" style="margin-bottom:8px">
+            <div class="label">Connection</div>
+            <div class="value" id="wsStatus" style="color:var(--text-dim);font-size:14px">Disconnected</div>
+          </div>
+          <div class="metric-card" style="margin-bottom:8px">
+            <div class="label">Ledger Entries</div>
+            <div class="value" id="ledgerCount">--</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Last Anchor</div>
+            <div class="value" id="lastAnchor" style="font-size:11px;word-break:break-all">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+const PAGE_TITLES = { scanner: 'Scanner', entropy: 'Entropy', chat: 'Chat', pipeline: 'Pipeline' };
+
+let systemMode = 'unknown';
+let pipelineAvailable = false;
+let ws = null;
+let pipelineCounts = { ingestion: 0, extraction: 0, conditioning: 0, anchoring: 0 };
+
+// --- Navigation ---
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const page = btn.dataset.page;
+    if (!page) return;
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + page).classList.add('active');
+  });
+});
+
+// --- Health Check & Mode Detection ---
+async function checkHealth() {
+  try {
+    const res = await fetch(API + '/api/health');
+    if (!res.ok) throw new Error('Health check failed');
+    const data = await res.json();
+
+    const badge = document.getElementById('modeBadge');
+    const modeText = document.getElementById('modeText');
+
+    if (data.ai_available || data.mode === 'cloud') {
+      systemMode = 'cloud';
+      badge.className = 'mode-badge cloud';
+      modeText.textContent = 'Cloud Mode';
+    } else {
+      systemMode = 'local';
+      badge.className = 'mode-badge';
+      modeText.textContent = 'Local Mode';
+    }
+
+    if (data.pipeline_available || data.redis_connected) {
+      pipelineAvailable = true;
+      document.getElementById('pipelineNav').classList.remove('hidden');
+      connectPipelineWS();
+    }
+  } catch {
+    document.getElementById('modeText').textContent = 'API Unavailable';
+  }
+}
+
+// --- Code Scanner ---
+async function scanCode() {
+  const code = document.getElementById('scanCode').value.trim();
+  if (!code) return;
+
+  const btn = document.getElementById('scanBtn');
+  const status = document.getElementById('scanStatus');
+  const results = document.getElementById('scanResults');
+
+  btn.disabled = true;
+  status.innerHTML = '<span class="spinner"></span> Scanning...';
+  results.innerHTML = '';
+
+  try {
+    const res = await fetch(API + '/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: code,
+        language: document.getElementById('scanLang').value
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Server error (${res.status})`);
+    }
+
+    const data = await res.json();
+    renderScanResults(data);
+    status.textContent = `Scan complete — ${(data.findings || []).length} finding(s)`;
+  } catch (err) {
+    results.innerHTML = `
+      <div class="error-banner">
+        <span>⚠ Scan failed: ${escapeHtml(err.message)}</span>
+        <button onclick="scanCode()">Retry</button>
+      </div>`;
+    status.textContent = '';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderScanResults(data) {
+  const el = document.getElementById('scanResults');
+  const findings = data.findings || [];
+
+  if (findings.length === 0) {
+    el.innerHTML = '<div class="results-area empty">No cryptographic vulnerabilities detected.</div>';
+    return;
+  }
+
+  const score = data.score != null ? data.score : Math.max(0, 100 - findings.length * 15);
+  const grade = score >= 80 ? 'good' : score >= 50 ? 'warn' : 'bad';
+
+  let html = `
+    <div class="card" style="text-align:center">
+      <div class="score-ring ${grade}">${score}</div>
+      <div style="font-size:12px;color:var(--text-dim)">${findings.length} vulnerability${findings.length > 1 ? 'ies' : 'y'} found</div>
+    </div>`;
+
+  for (const f of findings) {
+    const sev = (f.severity || 'medium').toLowerCase();
+    html += `
+      <div class="finding ${sev}">
+        <div class="title">${escapeHtml(f.title || f.vuln_class || 'Finding')}</div>
+        <div class="desc">${escapeHtml(f.description || '')}</div>
+        <div class="meta">Line ${f.line || '?'} · ${(f.severity || 'MEDIUM').toUpperCase()} · ${escapeHtml(f.vuln_class || '')}</div>
+        ${f.fix ? `<div class="fix">→ ${escapeHtml(f.fix)}</div>` : ''}
+      </div>`;
+  }
+  el.innerHTML = html;
+}
+
+// --- Entropy Analysis ---
+function generateRandomData() {
+  const bytes = new Uint8Array(256);
+  crypto.getRandomValues(bytes);
+  document.getElementById('entropyData').value = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function analyzeEntropy() {
+  const hexData = document.getElementById('entropyData').value.trim().replace(/\s/g, '');
+  if (!hexData || !/^[0-9a-fA-F]+$/.test(hexData)) {
+    alert('Please provide valid hex-encoded data.');
+    return;
+  }
+
+  const btn = document.getElementById('entropyBtn');
+  const status = document.getElementById('entropyStatus');
+  const results = document.getElementById('entropyResults');
+
+  btn.disabled = true;
+  status.innerHTML = '<span class="spinner"></span> Analyzing...';
+  results.innerHTML = '';
+
+  try {
+    const res = await fetch(API + '/api/entropy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: hexData })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Server error (${res.status})`);
+    }
+
+    const data = await res.json();
+    renderEntropyResults(data);
+    status.textContent = 'Analysis complete';
+  } catch (err) {
+    results.innerHTML = `
+      <div class="error-banner">
+        <span>⚠ Entropy analysis failed: ${escapeHtml(err.message)}</span>
+        <button onclick="analyzeEntropy()">Retry</button>
+      </div>`;
+    status.textContent = '';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderEntropyResults(data) {
+  const el = document.getElementById('entropyResults');
+  const m = data.metrics || {};
+  const quality = m.quality_score != null ? m.quality_score : 0;
+  const grade = quality >= 80 ? 'good' : quality >= 50 ? 'warn' : 'bad';
+
+  let html = `
+    <div class="card" style="text-align:center">
+      <div class="score-ring ${grade}">${quality}</div>
+      <div style="font-size:12px;color:var(--text-dim)">Entropy Quality Score</div>
+      <div class="quality-bar" style="max-width:200px;margin:8px auto 0">
+        <div class="fill" style="width:${quality}%;background:var(--${grade === 'good' ? 'green' : grade === 'warn' ? 'amber' : 'red'})"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Statistical Metrics</h3>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="value">${(m.shannon_entropy || 0).toFixed(4)}</div>
+          <div class="label">Shannon H (bits/byte)</div>
+        </div>
+        <div class="metric-card">
+          <div class="value">${(m.min_entropy || 0).toFixed(4)}</div>
+          <div class="label">Min-Entropy H∞</div>
+        </div>
+        <div class="metric-card">
+          <div class="value">${(m.chi_squared || 0).toFixed(2)}</div>
+          <div class="label">Chi-Squared χ²</div>
+        </div>
+        <div class="metric-card">
+          <div class="value">${(m.serial_correlation || 0).toFixed(6)}</div>
+          <div class="label">Serial Correlation</div>
+        </div>
+        <div class="metric-card">
+          <div class="value">${m.sample_size || 0}</div>
+          <div class="label">Sample Size (bytes)</div>
+        </div>`;
+
+  if (data.extraction && data.extraction.k_eff != null) {
+    html += `
+        <div class="metric-card">
+          <div class="value">${data.extraction.k_eff}</div>
+          <div class="label">K_eff (extractable bits)</div>
+        </div>`;
+  }
+
+  html += `</div></div>`;
+
+  if (data.nist_checks) {
+    const checks = data.nist_checks;
+    html += `
+    <div class="card">
+      <h3>NIST SP 800-90B Checks</h3>
+      <div class="results-area" style="font-family:var(--mono);font-size:12px">`;
+    for (const [check, result] of Object.entries(checks)) {
+      const passed = result === true || result === 'pass' || (typeof result === 'object' && result.passed);
+      html += `<div style="padding:2px 0"><span style="color:var(--${passed ? 'green' : 'red'})">${passed ? '✓' : '✗'}</span> ${escapeHtml(check)}</div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  if (data.analysis) {
+    html += `
+    <div class="card">
+      <h3>AI Analysis</h3>
+      <div class="results-area">${escapeHtml(data.analysis)}</div>
+    </div>`;
+  }
+
+  if (data.fingerprint) {
+    html += `
+    <div class="card">
+      <h3>SHA3-512 Fingerprint</h3>
+      <div class="results-area" style="font-family:var(--mono);font-size:11px;word-break:break-all">${escapeHtml(data.fingerprint)}</div>
+    </div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// --- Chat ---
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = '';
+
+  const messages = document.getElementById('chatMessages');
+  appendChatMsg('user', message);
+
+  const thinkingId = 'thinking-' + Date.now();
+  messages.insertAdjacentHTML('beforeend',
+    `<div class="chat-msg ai" id="${thinkingId}"><div class="avatar">AI</div><div class="bubble"><span class="spinner"></span> Thinking...</div></div>`);
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    const res = await fetch(API + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: message })
+    });
+
+    const thinkingEl = document.getElementById(thinkingId);
+    if (thinkingEl) thinkingEl.remove();
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Server error (${res.status})`);
+    }
+
+    const data = await res.json();
+    appendChatMsg('ai', data.response || data.message || 'No response received.');
+  } catch (err) {
+    const thinkingEl = document.getElementById(thinkingId);
+    if (thinkingEl) thinkingEl.remove();
+    appendChatMsg('error', `Connection error: ${err.message}. Check API status and try again.`);
+  }
+}
+
+function appendChatMsg(role, text) {
+  const messages = document.getElementById('chatMessages');
+  const label = role === 'user' ? 'U' : role === 'error' ? '!' : 'AI';
+  messages.insertAdjacentHTML('beforeend',
+    `<div class="chat-msg ${role}"><div class="avatar">${label}</div><div class="bubble">${escapeHtml(text)}</div></div>`);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// --- Pipeline WebSocket ---
+function connectPipelineWS() {
+  if (ws) return;
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = proto + '//' + location.host + '/ws/pipeline';
+
+  try {
+    ws = new WebSocket(wsUrl);
+  } catch {
+    updateWSStatus('Failed');
+    return;
+  }
+
+  ws.onopen = () => updateWSStatus('Connected');
+
+  ws.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      handlePipelineEvent(msg);
+    } catch { /* ignore malformed messages */ }
+  };
+
+  ws.onclose = () => {
+    ws = null;
+    updateWSStatus('Disconnected');
+    setTimeout(() => { if (pipelineAvailable) connectPipelineWS(); }, 5000);
+  };
+
+  ws.onerror = () => {
+    ws = null;
+    updateWSStatus('Error');
+  };
+}
+
+function updateWSStatus(status) {
+  const el = document.getElementById('wsStatus');
+  el.textContent = status;
+  el.style.color = status === 'Connected' ? 'var(--green)' : 'var(--text-dim)';
+}
+
+function handlePipelineEvent(msg) {
+  const stream = msg.stream || '';
+  const events = msg.events || (msg.data ? [msg] : []);
+
+  for (const event of events) {
+    let stage = '';
+    if (stream.includes('raw_timestamps') || stream.includes('ingestion')) stage = 'ingestion';
+    else if (stream.includes('extracted_entropy') || stream.includes('extraction')) stage = 'extraction';
+    else if (stream.includes('conditioned_entropy') || stream.includes('conditioning')) stage = 'conditioning';
+    else if (stream.includes('anchor') || stream.includes('ledger')) stage = 'anchoring';
+
+    if (stage) {
+      pipelineCounts[stage]++;
+      const countEl = document.getElementById('stage' + stage.charAt(0).toUpperCase() + stage.slice(1));
+      if (countEl) countEl.textContent = pipelineCounts[stage];
+    }
+
+    addEventToFeed(stream, event);
+  }
+
+  if (msg.ledger_count != null) {
+    document.getElementById('ledgerCount').textContent = msg.ledger_count;
+  }
+  if (msg.last_anchor) {
+    document.getElementById('lastAnchor').textContent = msg.last_anchor;
+  }
+}
+
+function addEventToFeed(stream, event) {
+  const feed = document.getElementById('eventFeed');
+  if (feed.querySelector('div[style]')) feed.innerHTML = '';
+
+  const ts = new Date().toISOString().slice(11, 23);
+  const shortStream = stream.split(':').pop() || stream || 'event';
+  const detail = typeof event.data === 'object' ? JSON.stringify(event.data).slice(0, 80) : (event.data || event.id || '');
+
+  feed.insertAdjacentHTML('afterbegin',
+    `<div class="event"><span class="ts">${ts}</span><span class="stream">${escapeHtml(shortStream)}</span><span>${escapeHtml(detail)}</span></div>`);
+
+  while (feed.children.length > 200) feed.removeChild(feed.lastChild);
+}
+
+// --- Utilities ---
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// --- Init ---
+checkHealth();
+setInterval(checkHealth, 30000);
+</script>
+</body>
+</html>

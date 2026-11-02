@@ -1,0 +1,28 @@
+NEBIUS x NVIDIA GLOBAL AI HACKATHON 2026 — SUBMISSION CHECKLIST
+================================================================
+Track: Best Apps and Agents
+Deadline: October 30, 2026
+Inventor: Swagata Banerjee (23BCE0143, VIT Vellore)
+
+LINKS
+-----
+Live App:     https://gitswagata1.github.io/cryptoguard-ai/
+Auto Demo:    https://gitswagata1.github.io/cryptoguard-ai/?demo
+GitHub Repo:  https://github.com/gitswagata1/cryptoguard-ai
+
+SUBMISSION ITEMS
+----------------
+[x] GitHub repository (public, MIT license)
+[x] Live deployed app (GitHub Pages)
+[x] Auto-demo walkthrough (?demo URL)
+[x] Patent IDF-B document (CryptoGuard_AI_IDF-B_Filled.pdf)
+[ ] 2-minute demo video (record and upload)
+[ ] Devpost submission (fill out form)
+
+DEVPOST FIELDS
+--------------
+Title:        CryptoGuard AI
+Tagline:      AI-powered cryptographic security operations center using NVIDIA Nemotron on Nebius AI Cloud
+Description:  See GitHub README.md
+Built With:   NVIDIA Nemotron Ultra 253B, Nemotron Nano 8B, Nebius AI Cloud, FastAPI, Python, JavaScript, Web Crypto API
+Track:        Best Apps and Agents
