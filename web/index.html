@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CryptoGuard AI — AI-Powered Cryptographic Security Operations Center</title>
 <meta name="description" content="Scan code for cryptographic vulnerabilities, analyze entropy quality, and get post-quantum migration guidance — powered by NVIDIA Nemotron on Nebius AI Cloud.">
-<meta property="og:title" content="CryptoGuard AI">
-<meta property="og:description" content="AI-Powered Cryptographic Security Operations Center using NVIDIA Nemotron">
+<meta property="og:title" content="CryptoGuard AI — Cryptographic Security Operations Center">
+<meta property="og:description" content="Scan code for crypto vulnerabilities, analyze entropy with NIST SP 800-90B, extract random bits via LHL, and get post-quantum guidance — powered by NVIDIA Nemotron on Nebius AI Cloud. Patent pending.">
 <meta property="og:type" content="website">
+<meta name="theme-color" content="#00d4ff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -469,7 +470,7 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 @media(max-width:900px){
   .scanner-layout,.entropy-layout,.arch-grid{grid-template-columns:1fr}
   .stats-row{grid-template-columns:repeat(2,1fr)}
-  .quick-grid,.standards-grid{grid-template-columns:1fr}
+  .quick-grid,.standards-grid{grid-template-columns:1fr!important}
   .scanner-layout,.chat-layout{height:auto;min-height:70vh}
   .arch-flow{flex-wrap:wrap}
   .arch-arrow{transform:rotate(90deg)}
@@ -600,6 +601,62 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 .footer-badge.pq{border-color:rgba(124,58,237,.3);color:var(--purple)}
 .footer-sep{width:1px;height:16px;background:var(--border)}
 
+/* ═══ GITHUB LINK ═══ */
+.gh-link{width:40px;height:40px;border:1px solid var(--border);background:var(--bg-2);border-radius:var(--radius-sm);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);
+  color:var(--text-2);text-decoration:none}
+.gh-link:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
+.gh-link svg{width:20px;height:20px;fill:currentColor}
+
+/* ═══════════════════════════════════════════════
+   PIPELINE PAGE
+   ═══════════════════════════════════════════════ */
+.pipeline-hero{text-align:center;margin-bottom:32px}
+.pipeline-hero h2{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.pipeline-hero p{color:var(--text-2);font-size:.95rem;max-width:600px;margin:0 auto}
+
+.pipeline-flow-visual{display:flex;align-items:stretch;gap:0;margin-bottom:28px;padding:8px 0;overflow-x:auto}
+.pipeline-stage{flex:1;min-width:180px;padding:28px 20px;background:var(--bg-glass);
+  border:1px solid var(--border);border-radius:var(--radius);text-align:center;
+  position:relative;transition:var(--transition);backdrop-filter:blur(10px)}
+.pipeline-stage:hover{border-color:var(--cyan);transform:translateY(-4px);
+  box-shadow:0 12px 32px var(--cyan-dim)}
+.pipeline-stage .stage-icon{width:52px;height:52px;border-radius:14px;margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;position:relative}
+.pipeline-stage .stage-icon::after{content:'';position:absolute;inset:-3px;border-radius:16px;
+  background:inherit;opacity:.25;filter:blur(8px);z-index:-1}
+.pipeline-stage .stage-icon svg{width:24px;height:24px;stroke:white;fill:none;stroke-width:1.8}
+.pipeline-stage h4{font-size:.9rem;font-weight:700;margin-bottom:6px}
+.pipeline-stage .stage-tag{font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--cyan);margin-bottom:8px}
+.pipeline-stage p{font-size:.78rem;color:var(--text-2);line-height:1.5}
+.pipeline-stage .stage-tech{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.pipeline-stage .stage-tech span{padding:2px 8px;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:10px;font-size:.62rem;color:var(--text-3);font-weight:600}
+.pipeline-arrow{display:flex;align-items:center;padding:0 6px;flex-shrink:0}
+.pipeline-arrow svg{width:28px;height:28px;stroke:var(--cyan);fill:none;stroke-width:2;
+  animation:arrow-pulse 2s ease-in-out infinite;opacity:.5}
+
+.pipeline-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+
+.stream-card{padding:20px;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);transition:var(--transition)}
+.stream-card:hover{border-color:var(--border-hover)}
+.stream-card h5{font-size:.8rem;font-weight:700;color:var(--cyan);margin-bottom:6px;
+  display:flex;align-items:center;gap:6px}
+.stream-card h5 .stream-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:pulse-dot 2s ease infinite}
+.stream-card p{font-size:.76rem;color:var(--text-2);line-height:1.5}
+.stream-card code{font-family:var(--font-mono);font-size:.72rem;background:var(--bg-0);
+  padding:2px 6px;border-radius:3px;color:var(--cyan)}
+
+.ledger-preview{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:16px;font-family:var(--font-mono);font-size:.72rem;line-height:1.7;color:var(--text-2);
+  overflow-x:auto;white-space:pre}
+.ledger-preview .ledger-key{color:var(--cyan)}
+.ledger-preview .ledger-str{color:var(--green)}
+.ledger-preview .ledger-num{color:var(--amber)}
+
 /* ═══ RESPONSIVE ADDITIONS ═══ */
 @media(max-width:900px){
   .how-steps{grid-template-columns:1fr;gap:12px}
@@ -607,6 +664,9 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   .prior-art-grid{grid-template-columns:1fr}
   .hero-pills{gap:6px}
   .footer-inner{flex-direction:column;gap:12px}
+  .pipeline-flow-visual{flex-wrap:wrap}
+  .pipeline-arrow{transform:rotate(90deg)}
+  .pipeline-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -641,6 +701,10 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
     <span class="tip">AI Chat</span>
   </button>
+  <button class="nav-btn" data-page="pipeline" onclick="showPage('pipeline')">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span class="tip">Pipeline</span>
+  </button>
   <div class="sidebar-bottom">
     <button class="nav-btn" data-page="arch" onclick="showPage('arch')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg>
@@ -657,6 +721,9 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   <span class="page-title" id="pageTitle">Dashboard</span>
   <div class="spacer"></div>
   <span class="badge badge-patent">Patent Pending</span>
+  <a class="gh-link" href="https://github.com/gitswagata1/cryptoguard-ai" target="_blank" rel="noopener" title="View on GitHub">
+    <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+  </a>
   <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
     <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
   </button>
@@ -686,13 +753,15 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
     <div class="hero-tagline">
       <span>Nebius</span><span class="dot"></span><span>NVIDIA Nemotron</span><span class="dot"></span><span>Post-Quantum Ready</span>
     </div>
-    <p>AI-powered cryptographic security operations center. Scan code for vulnerabilities, analyze entropy quality, and get post-quantum migration guidance — all in one platform.</p>
+    <p>AI-powered cryptographic security operations center. Scan code for vulnerabilities, analyze entropy with NIST SP 800-90B, extract random bits via the Leftover Hash Lemma, condition through HKDF-SHA3-256, and get post-quantum migration guidance — backed by a real-time 4-stage entropy pipeline with immutable Merkle-tree audit trails.</p>
     <div class="hero-pills">
       <span class="hero-pill accent">Nemotron Ultra 253B</span>
       <span class="hero-pill accent">Nemotron Nano 8B</span>
       <span class="hero-pill">NIST SP 800-90B</span>
+      <span class="hero-pill">COSMO Entropy Pipeline</span>
       <span class="hero-pill">10-Class Vulnerability Taxonomy</span>
-      <span class="hero-pill">Post-Quantum Migration</span>
+      <span class="hero-pill">Merkle Audit Trail</span>
+      <span class="hero-pill">Post-Quantum Ready</span>
     </div>
     <button class="btn-demo" onclick="runAutoDemo()" id="demoBtnHero">
       <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -746,27 +815,34 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
     </div>
   </div>
 
-  <div class="quick-grid">
+  <div class="quick-grid" style="grid-template-columns:repeat(4,1fr)">
     <div class="card quick-card" onclick="showPage('scanner')">
       <div class="qc-icon" style="background:var(--grad-3)">
         <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       </div>
       <h4>Scan Code</h4>
-      <p>Detect cryptographic vulnerabilities with Nemotron Ultra — hardcoded secrets, weak algorithms, insecure RNG</p>
+      <p>Detect cryptographic vulnerabilities with Nemotron Ultra — 10-class taxonomy with severity-ranked findings</p>
     </div>
     <div class="card quick-card" onclick="showPage('entropy')">
       <div class="qc-icon" style="background:var(--grad-2)">
         <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
       </div>
       <h4>Entropy Lab</h4>
-      <p>Generate and analyze random bytes with NIST SP 800-90B metrics and AI quality assessment</p>
+      <p>Generate and analyze random bytes with NIST SP 800-90B metrics, LHL extraction, and AI assessment</p>
+    </div>
+    <div class="card quick-card" onclick="showPage('pipeline')">
+      <div class="qc-icon" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h4>COSMO Pipeline</h4>
+      <p>Real-time 4-stage entropy pipeline — ingestion, extraction, conditioning, and Merkle anchoring</p>
     </div>
     <div class="card quick-card" onclick="showPage('chat')">
       <div class="qc-icon" style="background:var(--grad-1)">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       </div>
       <h4>Ask AI</h4>
-      <p>Chat with CryptoGuard about post-quantum cryptography, key management, and security best practices</p>
+      <p>Post-quantum migration guidance, key management audits, and cryptographic best practices</p>
     </div>
   </div>
 
@@ -788,6 +864,11 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
         <div class="feed-text"><strong>Nemotron Ultra 253B</strong> ready for code scanning</div>
         <span class="feed-time">now</span>
       </div>
+      <div class="feed-item" style="animation-delay:.35s">
+        <div class="feed-icon" style="background:linear-gradient(135deg,var(--purple),var(--cyan))"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="feed-text"><strong>COSMO Pipeline</strong> 4-stage entropy processing ready</div>
+        <span class="feed-time">now</span>
+      </div>
     </div>
   </div>
 
@@ -797,6 +878,7 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       <div class="powered-badge"><strong>NVIDIA</strong>&nbsp;Nemotron Nano 8B</div>
       <div class="powered-badge"><strong>Nebius</strong>&nbsp;AI Cloud</div>
       <div class="powered-badge"><strong>NIST</strong>&nbsp;SP 800-90B</div>
+      <div class="powered-badge"><strong>COSMO</strong>&nbsp;Entropy Pipeline</div>
       <div class="powered-badge"><strong>Post-Quantum</strong>&nbsp;Ready</div>
     </div>
   </div>
@@ -940,6 +1022,110 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   </div>
 </section>
 
+<!-- ════════ COSMO PIPELINE ════════ -->
+<section class="page" id="page-pipeline">
+  <div class="pipeline-hero">
+    <h2 class="text-gradient">COSMO Entropy Pipeline</h2>
+    <p>Real-time 4-stage microservice pipeline for cryptographic entropy ingestion, extraction, conditioning, and immutable anchoring — transported over Redis Streams.</p>
+  </div>
+
+  <div class="pipeline-flow-visual">
+    <div class="pipeline-stage">
+      <div class="stage-icon" style="background:var(--grad-3)">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="stage-tag">Stage 1</div>
+      <h4>Ingestion</h4>
+      <p>Captures raw timestamp entropy from hardware events, network jitter, and MQTT sources into Redis Streams</p>
+      <div class="stage-tech"><span>MQTT</span><span>Redis Streams</span><span>AsyncIO</span></div>
+    </div>
+    <div class="pipeline-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="pipeline-stage">
+      <div class="stage-icon" style="background:var(--grad-1)">
+        <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="stage-tag">Stage 2</div>
+      <h4>Extraction</h4>
+      <p>Applies Leftover Hash Lemma via SHAKE256 XOF for provably secure randomness extraction from imperfect sources</p>
+      <div class="stage-tech"><span>LHL</span><span>SHAKE256</span><span>Min-Entropy</span></div>
+    </div>
+    <div class="pipeline-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="pipeline-stage">
+      <div class="stage-icon" style="background:var(--grad-2)">
+        <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
+      </div>
+      <div class="stage-tag">Stage 3</div>
+      <h4>Mixing Pool</h4>
+      <p>HKDF-SHA3-256 conditioning with XOR mixing pool — two-stage Extract-then-Expand per RFC 5869 and NIST SP 800-90C</p>
+      <div class="stage-tech"><span>HKDF</span><span>SHA3-256</span><span>XOR Pool</span></div>
+    </div>
+    <div class="pipeline-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="pipeline-stage">
+      <div class="stage-icon" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">
+        <svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+      </div>
+      <div class="stage-tag">Stage 4</div>
+      <h4>Anchoring</h4>
+      <p>SHA3-256 Merkle tree construction + hash-chained JSONL ledger for tamper-evident, immutable audit trail</p>
+      <div class="stage-tech"><span>Merkle Tree</span><span>SHA3-256</span><span>JSONL Ledger</span></div>
+    </div>
+  </div>
+
+  <div class="pipeline-grid">
+    <div class="card">
+      <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Redis Stream Topology</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="stream-card">
+          <h5><span class="stream-dot"></span> cosmo:raw_timestamps</h5>
+          <p>Raw entropy events from ingestion sources. Each event carries a nanosecond timestamp and source identifier. Consumer group: <code>extraction-group</code></p>
+        </div>
+        <div class="stream-card">
+          <h5><span class="stream-dot"></span> cosmo:extracted_entropy</h5>
+          <p>LHL-extracted near-uniform random bits from the extraction stage. Batch size: 1024 events. Consumer group: <code>mixing-group</code></p>
+        </div>
+        <div class="stream-card">
+          <h5><span class="stream-dot"></span> cosmo:conditioned_entropy</h5>
+          <p>HKDF-SHA3-256 conditioned key material ready for anchoring. Consumer group: <code>anchoring-group</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:.9rem;font-weight:700;margin-bottom:16px">Immutable Audit Ledger</h3>
+      <p style="font-size:.8rem;color:var(--text-2);margin-bottom:14px;line-height:1.5">Every entropy operation is recorded in a hash-chained JSONL ledger with SHA3-256 Merkle tree roots. Tampering with any entry invalidates all subsequent hashes.</p>
+      <div class="ledger-preview"><span class="ledger-key">"seq"</span>: <span class="ledger-num">1042</span>,
+<span class="ledger-key">"timestamp"</span>: <span class="ledger-str">"2026-11-02T14:32:01.847Z"</span>,
+<span class="ledger-key">"merkle_root"</span>: <span class="ledger-str">"a3f2c1...8b4e"</span>,
+<span class="ledger-key">"prev_hash"</span>:  <span class="ledger-str">"7d1e9a...2f3c"</span>,
+<span class="ledger-key">"leaf_count"</span>: <span class="ledger-num">64</span>,
+<span class="ledger-key">"entropy_quality"</span>: <span class="ledger-num">97.8</span>,
+<span class="ledger-key">"algorithm"</span>: <span class="ledger-str">"SHA3-256"</span></div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <div class="stream-card" style="flex:1;min-width:140px">
+          <h5>Merkle Tree</h5>
+          <p>Binary tree of SHA3-256 hashes. Leaf nodes = conditioned entropy blocks. Enables O(log n) tamper proofs.</p>
+        </div>
+        <div class="stream-card" style="flex:1;min-width:140px">
+          <h5>Hash Chain</h5>
+          <p>Each JSONL entry includes <code>prev_hash</code> linking to the prior entry. Any modification breaks the chain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="padding:16px;background:var(--cyan-dim);border-radius:var(--radius-sm);border:1px solid rgba(0,212,255,.15)">
+      <p style="font-size:.82rem;color:var(--text-2);line-height:1.6">
+        <strong style="color:var(--cyan)">Deployment:</strong>
+        The COSMO pipeline runs as four independent Docker containers orchestrated via <code style="font-family:var(--font-mono);font-size:.78rem;background:var(--bg-0);padding:2px 6px;border-radius:3px">docker compose up</code>.
+        Redis acts as the message broker and stream transport.
+        Each microservice can be independently scaled and monitored via Prometheus metrics endpoints (ports 9090–9093).
+        Kubernetes manifests with network policies are provided for production deployments.
+      </p>
+    </div>
+  </div>
+</section>
+
 <!-- ════════ ARCHITECTURE & PATENT ════════ -->
 <section class="page" id="page-arch">
   <div class="arch-hero">
@@ -981,11 +1167,11 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       <li class="claim-item"><span class="claim-num">4</span>
         <span class="claim-text"><strong>Leftover Hash Lemma (LHL) extraction engine</strong> that computes extractable key bits k_eff = max(0, floor(n * H_inf - 2 * log2(1/epsilon))) from estimated min-entropy sources and applies SHAKE256 XOF as a near-universal hash function for provably secure randomness extraction</span></li>
       <li class="claim-item"><span class="claim-num">5</span>
-        <span class="claim-text"><strong>HKDF-SHA3-256 conditioning pipeline</strong> implementing a two-stage Extract-then-Expand key derivation per RFC 5869 and NIST SP 800-90C, conditioning extracted entropy through HMAC-based derivation with domain-separation info strings for cryptographic key material generation</span></li>
+        <span class="claim-text"><strong>Multi-metric entropy quality assessment</strong> computing Shannon entropy, MCV min-entropy, chi-squared goodness-of-fit, and serial correlation coefficient for comprehensive entropy source characterization per NIST SP 800-90B requirements</span></li>
       <li class="claim-item"><span class="claim-num">6</span>
-        <span class="claim-text"><strong>Post-quantum migration recommender</strong> that automatically identifies quantum-vulnerable algorithms (RSA, ECDH, ECDSA, DSA) in source code and generates specific replacement paths using NIST-standardized post-quantum primitives: CRYSTALS-Kyber (ML-KEM) for key encapsulation, CRYSTALS-Dilithium (ML-DSA) for digital signatures, and FALCON for lattice-based signatures</span></li>
+        <span class="claim-text"><strong>Real-time 4-stage entropy pipeline</strong> over Redis Streams (COSMO) — ingestion of raw timestamps, LHL extraction, HKDF-SHA3-256 conditioning with XOR mixing pool, and Merkle-tree anchoring — as independently scalable microservices with Kubernetes deployment and Prometheus observability</span></li>
       <li class="claim-item"><span class="claim-num">7</span>
-        <span class="claim-text"><strong>Unified cryptographic security operations center</strong> combining code vulnerability scanning, entropy quality analysis, and conversational AI guidance in a single-page application with real-time dashboard metrics, severity-ranked findings with inline fix recommendations, and byte-level entropy heatmap visualization</span></li>
+        <span class="claim-text"><strong>Immutable audit trail</strong> with SHA3-256 Merkle tree construction and hash-chained JSONL ledger providing tamper-evident logging of every entropy operation — any modification to a historical entry invalidates all subsequent hashes, enabling O(log n) tamper proofs</span></li>
     </ul>
   </div>
 
@@ -1006,8 +1192,16 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
         <p>Implements the Leftover Hash Lemma for provably secure randomness extraction from imperfect entropy sources, computing extractable bits based on min-entropy estimates and applying SHAKE256 XOF as a near-universal hash.</p>
       </div>
       <div class="innovation-card">
-        <h5><span class="inno-num">4</span> Real-Time Byte Distribution Heatmap</h5>
-        <p>256-cell visual heatmap rendering byte frequency distribution in real-time, enabling instant visual detection of bias patterns, stuck bits, and non-uniformity in random number generators.</p>
+        <h5><span class="inno-num">4</span> COSMO 4-Stage Entropy Pipeline</h5>
+        <p>Real-time microservice pipeline (Ingestion → Extraction → Mixing Pool → Anchoring) over Redis Streams with independent scaling, Prometheus metrics, and Kubernetes network policies.</p>
+      </div>
+      <div class="innovation-card">
+        <h5><span class="inno-num">5</span> RL-Based Model Routing</h5>
+        <p>PPO policy gradient + DPO preference pairs learn which model (Ultra 253B vs Nano 8B) to use for each request type, optimizing accuracy-latency tradeoff through continuous feedback.</p>
+      </div>
+      <div class="innovation-card">
+        <h5><span class="inno-num">6</span> Immutable Hash-Chained Audit Trail</h5>
+        <p>SHA3-256 Merkle trees + hash-chained JSONL ledger provide tamper-evident logging. Modifying any historical entry invalidates all subsequent hashes, enabling O(log n) tamper proofs.</p>
       </div>
     </div>
 
@@ -1087,6 +1281,8 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       <span class="footer-badge nebius">Nebius AI Cloud</span>
       <span class="footer-badge pq">Post-Quantum</span>
       <span class="footer-badge">NIST SP 800-90B</span>
+      <span class="footer-badge">COSMO Pipeline</span>
+      <span class="footer-badge">Patent Pending</span>
     </div>
     <div class="footer-sep"></div>
     <div class="footer-brand">Nebius × NVIDIA Global AI Hackathon 2026 · <strong>Best Apps and Agents</strong></div>
@@ -1206,7 +1402,7 @@ updateThemeIcon(savedTheme);
 // ═══════════════════════════════════════════════
 const API_BASE = window.location.origin;
 const state = { scans: 0, vulns: 0, entropy: null, chats: 0 };
-const PAGE_TITLES = { dashboard:'Dashboard', scanner:'Code Scanner', entropy:'Entropy Lab', chat:'AI Chat', arch:'Architecture & Patent Claims' };
+const PAGE_TITLES = { dashboard:'Dashboard', scanner:'Code Scanner', entropy:'Entropy Lab', chat:'AI Chat', pipeline:'COSMO Entropy Pipeline', arch:'Architecture & Patent Claims' };
 
 const DEMO_FINDINGS = [
   {severity:"critical",title:"Hardcoded Secret Key",description:"SECRET_KEY is hardcoded in source code. This will be exposed in version control and compiled artifacts.",line:4,fix:"Use environment variables: os.environ.get('SECRET_KEY')"},
@@ -1515,7 +1711,7 @@ async function runAutoDemo() {
   demoRunning = true;
   const heroBtn = document.getElementById('demoBtnHero');
   if (heroBtn) heroBtn.disabled = true;
-  const STEPS = 4;
+  const STEPS = 5;
 
   // Step 1: Dashboard overview
   demoBanner(1, STEPS, 'Dashboard Overview');
@@ -1543,8 +1739,14 @@ async function runAutoDemo() {
   await wait(2500);
   if (!demoRunning) return cleanup();
 
-  // Step 4: AI Chat
-  demoBanner(4, STEPS, 'AI Chat — Post-Quantum Guidance');
+  // Step 4: COSMO Pipeline
+  demoBanner(4, STEPS, 'COSMO Entropy Pipeline');
+  showPage('pipeline');
+  await wait(3000);
+  if (!demoRunning) return cleanup();
+
+  // Step 5: AI Chat
+  demoBanner(5, STEPS, 'AI Chat — Post-Quantum Guidance');
   showPage('chat');
   await wait(600);
   const chatIn = document.getElementById('chatInput');
