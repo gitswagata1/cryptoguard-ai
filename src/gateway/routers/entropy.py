@@ -96,6 +96,8 @@ async def analyze_entropy(req: EntropyRequest):
                 "fingerprint": fingerprint.hex()[:32],
             })
             model_used = "nemotron-nano"
+        except (ConnectionError, TimeoutError) as exc:
+            logger.warning("AI entropy analysis unavailable: %s", exc)
         except Exception:
             logger.exception("AI entropy analysis failed")
 

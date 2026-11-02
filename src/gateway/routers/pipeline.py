@@ -31,10 +31,10 @@ async def pipeline_status():
             try:
                 length = await redis.xlen(stream_name)
                 streams[stream_name] = length
-            except Exception:
+            except (ConnectionError, TimeoutError):
                 streams[stream_name] = 0
         return PipelineStatusResponse(connected=True, streams=streams)
-    except Exception:
+    except (ConnectionError, TimeoutError, OSError):
         logger.exception("Pipeline status check failed")
         return PipelineStatusResponse(connected=False, streams={})
 
@@ -78,6 +78,9 @@ async def pipeline_ledger():
                 entry_hash=entry["entry_hash"],
             ))
         return result
-    except Exception:
+    except (ConnectionError, TimeoutError, OSError):
         logger.exception("Ledger query failed")
+        return []
+    except (json.JSONDecodeError, KeyError):
+        logger.exception("Ledger entry parsing failed")
         return []

@@ -71,7 +71,7 @@ async def scan_code_endpoint(req: ScanRequest):
 
     if ai and ai.available:
         try:
-            from cosmo_core.taxonomy import TAXONOMY, build_taxonomy_prompt
+            from cosmo_core.taxonomy import build_taxonomy_prompt
             result = await ai.scan_code(req.code, req.language, build_taxonomy_prompt())
             if result and "findings" in result:
                 for f in result["findings"]:
@@ -84,6 +84,8 @@ async def scan_code_endpoint(req: ScanRequest):
                         vuln_class=None,
                     ))
                 model_used = "nemotron-ultra"
+        except (ImportError, ConnectionError, TimeoutError) as exc:
+            logger.warning("LLM scan unavailable (%s), using rule-based results only", exc)
         except Exception:
             logger.exception("LLM scan failed, using rule-based results only")
 

@@ -1,6 +1,8 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+*.egg
+*.whl
 dist/
 build/
 .pytest_cache/
@@ -15,3 +17,8 @@ node_modules/
 *.log
 .coverage
 htmlcov/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
