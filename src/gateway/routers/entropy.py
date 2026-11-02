@@ -10,7 +10,7 @@ import logging
 import time
 
 import numpy as np
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 
 from cosmo_core.entropy import compute_all_metrics
 from cosmo_core.extraction import (

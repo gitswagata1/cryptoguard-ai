@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 import time
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from cosmo_core.taxonomy import Finding as CoreFinding, scan_code as rule_scan
 from gateway.dependencies import get_ai_client, get_feedback_collector

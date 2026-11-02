@@ -5,7 +5,7 @@ import json
 import logging
 import struct
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 
 from gateway.dependencies import get_redis
 from gateway.models.requests import PipelineSubmitRequest

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 
 class SecurityRewardFunction:
     """Reward computation for RL-based routing optimisation."""

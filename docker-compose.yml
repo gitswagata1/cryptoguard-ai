@@ -30,7 +30,7 @@ services:
   ingestion:
     build:
       context: .
-      dockerfile: services/ingestion/Dockerfile
+      dockerfile: project-cosmo/services/ingestion/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379
       - MQTT_BROKER=${MQTT_BROKER:-mqtt://localhost:1883}
@@ -42,7 +42,7 @@ services:
   extraction:
     build:
       context: .
-      dockerfile: services/extraction/Dockerfile
+      dockerfile: project-cosmo/services/extraction/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379
       - INPUT_STREAM=cosmo:raw_timestamps
@@ -56,7 +56,7 @@ services:
   mixing-pool:
     build:
       context: .
-      dockerfile: services/mixing-pool/Dockerfile
+      dockerfile: project-cosmo/services/mixing-pool/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379
       - INPUT_STREAM=cosmo:extracted_entropy
@@ -69,7 +69,7 @@ services:
   anchoring:
     build:
       context: .
-      dockerfile: services/anchoring/Dockerfile
+      dockerfile: project-cosmo/services/anchoring/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379
       - INPUT_STREAM=cosmo:conditioned_entropy

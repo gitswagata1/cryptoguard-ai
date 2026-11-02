@@ -4,9 +4,14 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .env
 *.pyc
 .venv/
 venv/
 node_modules/
 .claude/
+*.log
+.coverage
+htmlcov/

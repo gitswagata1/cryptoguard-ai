@@ -17,7 +17,8 @@ def compute_merkle_root(leaves: list[bytes]) -> bytes:
     if not leaves:
         return _sha3_256(b"")
 
-    layer = [_sha3_256(leaf) if len(leaf) != 32 else leaf for leaf in leaves]
+    digest_len = len(_sha3_256(b""))
+    layer = [_sha3_256(leaf) if len(leaf) != digest_len else leaf for leaf in leaves]
 
     while len(layer) > 1:
         next_layer: list[bytes] = []

@@ -34,7 +34,7 @@ async def pipeline_ws(ws: WebSocket):
 
     try:
         while True:
-            streams_arg = {k: v for k, v in last_ids.items()}
+            streams_arg = dict(last_ids)
             events = await redis.xread(streams_arg, count=20, block=1000)
 
             if events:

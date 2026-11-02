@@ -14,7 +14,7 @@ EXTRACTION_EPSILON: float = 2.0 ** (-SECURITY_PARAM_BITS)
 BIN_WIDTH_NS: int = 1000
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class EntropyEstimate:
     """Result of min-entropy estimation on quantized inter-arrival deltas."""
     min_entropy_per_sample: float

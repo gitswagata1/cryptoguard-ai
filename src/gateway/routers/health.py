@@ -27,6 +27,9 @@ async def health(settings: Settings = Depends(get_settings)):
     return HealthResponse(
         status="ok",
         mode=mode,
+        ai_available=ai is not None and ai.available,
+        pipeline_available=redis is not None,
+        redis_connected=redis is not None,
         capabilities=capabilities,
         models=models,
     )

@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Union
 
 import numpy as np
 from numpy.typing import NDArray
+
+BytesLike = bytes | bytearray | NDArray[np.uint8]
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,13 +22,13 @@ class EntropyMetrics:
     sample_size: int
 
 
-def _to_uint8_array(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> NDArray[np.uint8]:
+def _to_uint8_array(data: BytesLike) -> NDArray[np.uint8]:
     if isinstance(data, (bytes, bytearray)):
         return np.frombuffer(data, dtype=np.uint8)
     return np.asarray(data, dtype=np.uint8)
 
 
-def shannon_entropy(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> float:
+def shannon_entropy(data: BytesLike) -> float:
     """Compute Shannon entropy in bits per byte (max 8.0)."""
     arr = _to_uint8_array(data)
     if arr.size == 0:
@@ -37,7 +38,7 @@ def shannon_entropy(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> float:
     return -float(np.sum(probs * np.log2(probs)))
 
 
-def min_entropy(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> float:
+def min_entropy(data: BytesLike) -> float:
     """Compute min-entropy: -log2(max probability)."""
     arr = _to_uint8_array(data)
     if arr.size == 0:
@@ -49,7 +50,7 @@ def min_entropy(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> float:
     return -math.log2(p_max)
 
 
-def chi_squared(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> tuple[float, float]:
+def chi_squared(data: BytesLike) -> tuple[float, float]:
     """Compute chi-squared statistic and p-value for uniform byte distribution."""
     from scipy import stats as sp_stats
 
@@ -63,7 +64,7 @@ def chi_squared(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> tuple[float
     return chi2, p_value
 
 
-def serial_correlation(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> float:
+def serial_correlation(data: BytesLike) -> float:
     """Compute lag-1 serial correlation coefficient."""
     arr = _to_uint8_array(data).astype(np.float64)
     n = arr.size
@@ -78,20 +79,20 @@ def serial_correlation(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> floa
     return covariance / variance
 
 
-def quality_score(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> float:
+def quality_score(data: BytesLike) -> float:
     """Map Shannon entropy to a 0-100 quality score (100 = perfect randomness)."""
     h = shannon_entropy(data)
     return min(100.0, max(0.0, (h / 8.0) * 100.0))
 
 
-def compute_all_metrics(data: Union[bytes, bytearray, NDArray[np.uint8]]) -> EntropyMetrics:
+def compute_all_metrics(data: BytesLike) -> EntropyMetrics:
     """Compute all entropy metrics for a byte sequence."""
     arr = _to_uint8_array(data)
     h = shannon_entropy(arr)
     h_min = min_entropy(arr)
     chi2, p_val = chi_squared(arr)
     sc = serial_correlation(arr)
-    qs = int(min(100.0, max(0.0, (h / 8.0) * 100.0)))
+    qs = int(quality_score(arr))
     return EntropyMetrics(
         shannon_entropy=h,
         min_entropy=h_min,

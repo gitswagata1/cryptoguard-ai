@@ -7,7 +7,7 @@ import time
 from typing import Any
 
 from fastapi import HTTPException
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI, APIError
 
 from ..config import Settings
 
@@ -85,9 +85,9 @@ class NIMClient:
             model_used = resp.model or self._settings.model_ultra
             logger.info("chat completed in %.1f ms model=%s", elapsed, model_used)
             return content, model_used
-        except Exception:
+        except (APIError, OSError, ValueError) as exc:
             logger.exception("NIM chat request failed")
-            raise HTTPException(status_code=502, detail="Upstream AI service error")
+            raise HTTPException(status_code=502, detail="Upstream AI service error") from exc
 
     async def scan_code(
         self,
@@ -115,12 +115,12 @@ class NIMClient:
             )
             raw = resp.choices[0].message.content or "{}"
             return _extract_json(raw)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as exc:
             logger.error("Failed to parse scan JSON from model output")
-            raise HTTPException(status_code=502, detail="Model returned invalid JSON")
-        except Exception:
+            raise HTTPException(status_code=502, detail="Model returned invalid JSON") from exc
+        except (APIError, OSError, ValueError) as exc:
             logger.exception("NIM scan request failed")
-            raise HTTPException(status_code=502, detail="Upstream AI service error")
+            raise HTTPException(status_code=502, detail="Upstream AI service error") from exc
 
     async def analyze_entropy(self, metrics: dict) -> str:
         """Generate a natural-language entropy assessment."""
@@ -140,9 +140,9 @@ class NIMClient:
                 max_tokens=400,
             )
             return resp.choices[0].message.content or ""
-        except Exception:
+        except (APIError, OSError, ValueError) as exc:
             logger.exception("NIM entropy analysis failed")
-            raise HTTPException(status_code=502, detail="Upstream AI service error")
+            raise HTTPException(status_code=502, detail="Upstream AI service error") from exc
 
     async def analyze_image(self, image_b64: str, prompt: str) -> str:
         """Analyse an image via NeVA multimodal endpoint."""
@@ -157,6 +157,6 @@ class NIMClient:
         )
         try:
             return await neva.analyze(image_b64, prompt)
-        except Exception:
+        except (APIError, OSError, ValueError) as exc:
             logger.exception("NeVA image analysis failed")
-            raise HTTPException(status_code=502, detail="NeVA service error")
+            raise HTTPException(status_code=502, detail="NeVA service error") from exc

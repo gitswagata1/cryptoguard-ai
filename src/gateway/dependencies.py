@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from functools import lru_cache
-from typing import AsyncGenerator
+from typing import Any
 
 import redis.asyncio as aioredis
 
@@ -12,8 +12,8 @@ from gateway.config import Settings
 logger = logging.getLogger("cosmo.gateway")
 
 _redis_pool: aioredis.Redis | None = None
-_ai_client = None
-_feedback_collector = None
+_ai_client: Any | None = None
+_feedback_collector: Any | None = None
 
 
 @lru_cache
@@ -43,7 +43,7 @@ def get_redis() -> aioredis.Redis | None:
     return _redis_pool
 
 
-async def init_ai_client(settings: Settings):
+async def init_ai_client(settings: Settings) -> Any:
     global _ai_client
     if settings.is_cloud_mode:
         from gateway.ai.nim_client import NIMClient
@@ -56,11 +56,11 @@ async def init_ai_client(settings: Settings):
     return _ai_client
 
 
-def get_ai_client():
+def get_ai_client() -> Any | None:
     return _ai_client
 
 
-async def init_feedback_collector(settings: Settings):
+async def init_feedback_collector(settings: Settings) -> Any | None:
     global _feedback_collector
     if settings.rl_feedback_enabled:
         from gateway.rl.feedback import FeedbackCollector
@@ -69,5 +69,5 @@ async def init_feedback_collector(settings: Settings):
     return _feedback_collector
 
 
-def get_feedback_collector():
+def get_feedback_collector() -> Any | None:
     return _feedback_collector
