@@ -654,6 +654,16 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 .pipeline-hero{text-align:center;margin-bottom:32px}
 .pipeline-hero h2{font-size:1.8rem;font-weight:800;margin-bottom:8px}
 .pipeline-hero p{color:var(--text-2);font-size:.95rem;max-width:600px;margin:0 auto}
+.pipeline-log{margin-top:16px;background:var(--bg-0);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:12px 16px;font-family:var(--font-mono);font-size:.72rem;line-height:1.8;max-height:220px;overflow-y:auto;text-align:left;max-width:600px;margin-left:auto;margin-right:auto}
+.pipeline-log .log-line{opacity:0;animation:logFadeIn .3s forwards}
+.pipeline-log .log-stage{color:var(--cyan);font-weight:700}
+.pipeline-log .log-ok{color:var(--green)}
+.pipeline-log .log-data{color:var(--text-3)}
+.pipeline-log .log-hash{color:var(--purple)}
+@keyframes logFadeIn{to{opacity:1}}
+.pipeline-stage.active-sim{box-shadow:0 0 20px rgba(0,212,255,.3);border-color:var(--cyan);transform:translateY(-4px)}
+.pipeline-stage{transition:all .4s}
 
 .pipeline-flow-visual{display:flex;align-items:stretch;gap:0;margin-bottom:28px;padding:8px 0;overflow-x:auto}
 .pipeline-stage{flex:1;min-width:180px;padding:28px 20px;background:var(--bg-glass);
@@ -933,7 +943,13 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
           <option value="go">Go</option><option value="java">Java</option><option value="rust">Rust</option>
           <option value="auto">Auto-detect</option></select>
         <div style="flex:1"></div>
-        <button class="btn btn-sm btn-secondary" onclick="loadExample()">Load Example</button>
+        <select id="exampleSelect" onchange="loadSelectedExample()" style="font-size:.75rem;padding:4px 8px;background:var(--bg-1);color:var(--text-2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer">
+          <option value="">Load Example...</option>
+          <option value="python">Python — Crypto Vuln</option>
+          <option value="javascript">JavaScript — Web Crypto</option>
+          <option value="go">Go — TLS & Rand</option>
+          <option value="java">Java — Cipher Usage</option>
+        </select>
       </div>
       <div class="code-editor" id="codeEditorBox">
         <div class="scan-line" id="scanLine"></div>
@@ -957,7 +973,8 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
         </div>
         <div class="results-header" id="resultsHeader" style="display:none">
           <div><div style="display:flex;align-items:center;gap:8px"><h3 style="font-size:.95rem;font-weight:700">Security Analysis</h3>
-            <button class="btn-copy" onclick="copyReport()" id="copyReportBtn">Copy Report</button></div>
+            <button class="btn-copy" onclick="copyReport()" id="copyReportBtn">Copy Report</button>
+            <button class="btn-copy" onclick="downloadReport()" id="downloadReportBtn">Download</button></div>
             <p style="font-size:.78rem;color:var(--text-2);margin-top:4px" id="resultsSummary"></p></div>
           <div class="score-ring" id="scoreRing">
             <svg viewBox="0 0 68 68"><circle cx="34" cy="34" r="30" fill="none" stroke="var(--bg-2)" stroke-width="4"/>
@@ -1093,6 +1110,11 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   <div class="pipeline-hero">
     <h2 class="text-gradient">COSMO Entropy Pipeline</h2>
     <p>Real-time 4-stage microservice pipeline for cryptographic entropy ingestion, extraction, conditioning, and immutable anchoring — transported over Redis Streams.</p>
+    <button class="btn btn-primary" onclick="runPipelineSim()" id="pipelineSimBtn" style="margin-top:14px">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Run Live Simulation
+    </button>
+    <div id="pipelineLog" class="pipeline-log" style="display:none"></div>
   </div>
 
   <div class="pipeline-flow-visual">
@@ -1677,7 +1699,95 @@ function updateLineNumbers() {
   lineNumbers.innerHTML = Array.from({length:n},(_,i)=>i+1).join('<br>');
 }
 
-function loadExample() { codeInput.value = EXAMPLE_CODE; updateLineNumbers(); }
+function loadExample() { codeInput.value = EXAMPLE_CODE; document.getElementById('langSelect').value='python'; updateLineNumbers(); }
+
+const CODE_EXAMPLES = {
+  python: EXAMPLE_CODE,
+  javascript: `const crypto = require('crypto');
+
+const API_KEY = "sk-live-abc123def456ghi789";
+
+function hashToken(token) {
+  return crypto.createHash('md5').update(token).digest('hex');
+}
+
+function generateSessionId() {
+  return Math.random().toString(36).substring(2);
+}
+
+function encrypt(text, key) {
+  const cipher = crypto.createCipher('des-ecb', key);
+  return cipher.update(text, 'utf8', 'hex') + cipher.final('hex');
+}
+
+function verifyToken(input, expected) {
+  return input === expected;
+}`,
+  go: `package main
+
+import (
+\t"crypto/md5"
+\t"crypto/des"
+\t"math/rand"
+\t"fmt"
+)
+
+var secretKey = "hardcoded-key-12345678"
+
+func hashPassword(password string) string {
+\th := md5.Sum([]byte(password))
+\treturn fmt.Sprintf("%x", h)
+}
+
+func generateNonce() int {
+\treturn rand.Intn(1000000)
+}
+
+func encryptBlock(data []byte) ([]byte, error) {
+\tblock, err := des.NewCipher([]byte(secretKey[:8]))
+\tif err != nil { return nil, err }
+\tout := make([]byte, 8)
+\tblock.Encrypt(out, data[:8])
+\treturn out, nil
+}`,
+  java: `import javax.crypto.Cipher;
+import java.security.MessageDigest;
+import java.util.Random;
+
+public class CryptoService {
+    private static final String SECRET = "myHardcodedKey123456";
+
+    public static String hashPassword(String password) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] digest = md.digest(password.getBytes());
+        return bytesToHex(digest);
+    }
+
+    public static String generateToken() {
+        Random random = new Random();
+        return String.valueOf(random.nextInt(999999));
+    }
+
+    public static byte[] encrypt(byte[] data) throws Exception {
+        Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+        return cipher.doFinal(data);
+    }
+
+    public static boolean verify(String a, String b) {
+        return a.equals(b);
+    }
+}`
+};
+
+function loadSelectedExample() {
+  const sel = document.getElementById('exampleSelect');
+  const lang = sel.value;
+  if (!lang) return;
+  codeInput.value = CODE_EXAMPLES[lang] || EXAMPLE_CODE;
+  document.getElementById('langSelect').value = lang;
+  updateLineNumbers();
+  sel.value = '';
+}
 
 function clearEditor() {
   codeInput.value = ''; lineNumbers.innerHTML = '1';
@@ -2076,6 +2186,131 @@ function copyReport() {
     const btn = document.getElementById('copyReportBtn');
     btn.textContent = 'Failed'; setTimeout(() => { btn.textContent = 'Copy Report'; }, 2000);
   });
+}
+
+function downloadReport() {
+  const findings = document.querySelectorAll('.finding');
+  if (!findings.length) return;
+  const score = document.getElementById('scoreText').textContent;
+  const summary = document.getElementById('resultsSummary').textContent;
+  const json = {
+    generator: 'CryptoGuard AI',
+    url: 'https://gitswagata1.github.io/cryptoguard-ai/',
+    timestamp: new Date().toISOString(),
+    score: parseInt(score),
+    summary,
+    findings: Array.from(findings).map(f => ({
+      severity: f.querySelector('.badge')?.textContent?.toUpperCase() || '',
+      title: f.querySelector('.f-title')?.textContent || '',
+      description: f.querySelector('.f-desc')?.textContent || '',
+      fix: f.querySelector('.f-fix')?.textContent || '',
+      line: f.querySelector('.f-line')?.textContent?.replace(/[^0-9]/g,'') || null
+    }))
+  };
+  const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cryptoguard-report-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const btn = document.getElementById('downloadReportBtn');
+  btn.textContent = 'Saved!'; setTimeout(() => { btn.textContent = 'Download'; }, 2000);
+}
+
+// ═══════════════════════════════════════════════
+// COSMO PIPELINE LIVE SIMULATION
+// ═══════════════════════════════════════════════
+async function runPipelineSim() {
+  const btn = document.getElementById('pipelineSimBtn');
+  const log = document.getElementById('pipelineLog');
+  const stages = document.querySelectorAll('.pipeline-stage');
+  btn.disabled = true; btn.innerHTML = '<span class="typing-indicator" style="display:inline-flex;gap:3px"><span></span><span></span><span></span></span> Running...';
+  log.style.display = 'block'; log.innerHTML = '';
+
+  function addLog(html) {
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span class="log-data">[${new Date().toISOString().slice(11,23)}]</span> ${html}`;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+  function hexRand(n) { const b = new Uint8Array(n); crypto.getRandomValues(b); return Array.from(b, x => x.toString(16).padStart(2,'0')).join(''); }
+  function highlightStage(i) { stages.forEach((s,j) => s.classList.toggle('active-sim', j===i)); }
+  const w = ms => new Promise(r => setTimeout(r, ms));
+
+  // Stage 1: Ingestion
+  highlightStage(0);
+  addLog('<span class="log-stage">[INGESTION]</span> Capturing raw timestamp entropy...');
+  await w(600);
+  const timestamps = [];
+  for (let i = 0; i < 4; i++) {
+    const ts = Date.now() * 1000000 + Math.floor(Math.random() * 1000000);
+    timestamps.push(ts);
+    addLog(`<span class="log-stage">[INGESTION]</span> Event ${i+1}/4 — ts: <span class="log-hash">${ts}</span> ns`);
+    await w(300);
+  }
+  addLog('<span class="log-stage">[INGESTION]</span> <span class="log-ok">✓</span> 4 events ingested into cosmo:raw_timestamps');
+  await w(500);
+
+  // Stage 2: Extraction (LHL)
+  highlightStage(1);
+  addLog('<span class="log-stage">[EXTRACTION]</span> Computing inter-arrival deltas...');
+  await w(400);
+  const deltas = [];
+  for (let i = 1; i < timestamps.length; i++) deltas.push(timestamps[i] - timestamps[i-1]);
+  addLog(`<span class="log-stage">[EXTRACTION]</span> Deltas: [${deltas.map(d=>d.toLocaleString()).join(', ')}] ns`);
+  await w(300);
+  addLog('<span class="log-stage">[EXTRACTION]</span> Estimating min-entropy via MCV...');
+  await w(400);
+  const rawBytes = new Uint8Array(32); crypto.getRandomValues(rawBytes);
+  const minEnt = (7.0 + Math.random() * 0.9).toFixed(4);
+  const kEff = Math.max(0, Math.floor(32 * parseFloat(minEnt) - 256));
+  addLog(`<span class="log-stage">[EXTRACTION]</span> H∞ = ${minEnt} b/B, k_eff = ${kEff} bits`);
+  await w(300);
+  const extracted = hexRand(Math.max(4, Math.floor(kEff / 8)));
+  addLog(`<span class="log-stage">[EXTRACTION]</span> SHAKE256 XOF → <span class="log-hash">${extracted.slice(0,32)}...</span>`);
+  addLog('<span class="log-stage">[EXTRACTION]</span> <span class="log-ok">✓</span> LHL extraction complete');
+  await w(500);
+
+  // Stage 3: Mixing Pool
+  highlightStage(2);
+  addLog('<span class="log-stage">[MIXING]</span> XOR mixing into entropy pool...');
+  await w(400);
+  const poolState = hexRand(32);
+  addLog(`<span class="log-stage">[MIXING]</span> Pool state: <span class="log-hash">${poolState.slice(0,32)}...</span>`);
+  await w(300);
+  addLog('<span class="log-stage">[MIXING]</span> Applying HKDF-SHA3-256 conditioning...');
+  await w(500);
+  const conditioned = hexRand(32);
+  addLog(`<span class="log-stage">[MIXING]</span> PRK = HMAC-SHA3-256(salt, pool)`);
+  addLog(`<span class="log-stage">[MIXING]</span> OKM → <span class="log-hash">${conditioned.slice(0,32)}...</span>`);
+  addLog('<span class="log-stage">[MIXING]</span> <span class="log-ok">✓</span> HKDF conditioning complete');
+  await w(500);
+
+  // Stage 4: Anchoring
+  highlightStage(3);
+  addLog('<span class="log-stage">[ANCHORING]</span> Building SHA3-256 Merkle tree...');
+  await w(400);
+  const leaf1 = hexRand(32), leaf2 = hexRand(32);
+  addLog(`<span class="log-stage">[ANCHORING]</span> Leaf[0]: <span class="log-hash">${leaf1.slice(0,24)}...</span>`);
+  addLog(`<span class="log-stage">[ANCHORING]</span> Leaf[1]: <span class="log-hash">${leaf2.slice(0,24)}...</span>`);
+  await w(300);
+  const merkleRoot = hexRand(32);
+  addLog(`<span class="log-stage">[ANCHORING]</span> Merkle root: <span class="log-hash">${merkleRoot.slice(0,32)}...</span>`);
+  await w(300);
+  const prevHash = hexRand(32);
+  const entryHash = hexRand(32);
+  addLog('<span class="log-stage">[ANCHORING]</span> Writing hash-chained ledger entry...');
+  await w(400);
+  addLog(`<span class="log-stage">[ANCHORING]</span> prev_hash: <span class="log-hash">${prevHash.slice(0,24)}...</span>`);
+  addLog(`<span class="log-stage">[ANCHORING]</span> entry_hash: <span class="log-hash">${entryHash.slice(0,24)}...</span>`);
+  addLog('<span class="log-stage">[ANCHORING]</span> <span class="log-ok">✓</span> Ledger entry anchored — tamper-evident');
+  await w(300);
+
+  // Done
+  stages.forEach(s => s.classList.remove('active-sim'));
+  addLog('<span class="log-ok" style="font-weight:700">═══ PIPELINE COMPLETE ═══ All 4 stages executed successfully</span>');
+  btn.disabled = false; btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Again';
 }
 
 // ═══════════════════════════════════════════════
