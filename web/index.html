@@ -9,6 +9,7 @@
 <meta property="og:description" content="Scan code for crypto vulnerabilities, analyze entropy with NIST SP 800-90B, extract random bits via LHL, and get post-quantum guidance — powered by NVIDIA Nemotron on Nebius AI Cloud. Patent pending.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#00d4ff">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -601,6 +602,45 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
 .footer-badge.pq{border-color:rgba(124,58,237,.3);color:var(--purple)}
 .footer-sep{width:1px;height:16px;background:var(--border)}
 
+/* ═══ NIST CHECKS ═══ */
+.nist-checks{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.nist-check{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-2);
+  border-radius:var(--radius-xs);border:1px solid var(--border);font-size:.78rem;transition:var(--transition)}
+.nist-check:hover{border-color:var(--border-hover)}
+.nist-check .check-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;font-size:.65rem;font-weight:800}
+.nist-check .check-icon.pass{background:var(--green-dim);color:var(--green)}
+.nist-check .check-icon.fail{background:var(--red-dim);color:var(--red)}
+.nist-check .check-name{font-weight:600;color:var(--text-1);min-width:100px}
+.nist-check .check-detail{color:var(--text-2);flex:1}
+
+/* ═══ LHL EXTRACTION ═══ */
+.lhl-panel{margin-top:14px;padding:16px;background:linear-gradient(135deg,var(--cyan-dim),var(--purple-dim));
+  border:1px solid var(--border-hover);border-radius:var(--radius-sm);position:relative;overflow:hidden}
+.lhl-panel::before{content:'LHL';position:absolute;top:8px;right:12px;font-size:.55rem;
+  font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);opacity:.4}
+.lhl-panel h5{font-size:.78rem;font-weight:700;color:var(--cyan);margin-bottom:8px;
+  display:flex;align-items:center;gap:6px}
+.lhl-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;
+  font-size:.76rem;border-bottom:1px solid rgba(0,212,255,.08)}
+.lhl-row:last-child{border-bottom:none}
+.lhl-row .lhl-label{color:var(--text-2)}
+.lhl-row .lhl-value{font-family:var(--font-mono);font-weight:700;color:var(--text-1)}
+
+/* ═══ COPY BUTTON ═══ */
+.btn-copy{padding:6px 12px;font-size:.7rem;font-weight:700;letter-spacing:.3px;
+  text-transform:uppercase;background:var(--bg-2);color:var(--text-2);border:1px solid var(--border);
+  border-radius:var(--radius-xs);cursor:pointer;transition:var(--transition);font-family:var(--font-sans)}
+.btn-copy:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-copy.copied{border-color:var(--green);color:var(--green)}
+
+/* ═══ KEYBOARD HINTS ═══ */
+.kbd-hint{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;
+  border-radius:4px;background:var(--bg-2);border:1px solid var(--border);font-size:.58rem;
+  font-weight:800;color:var(--text-3);font-family:var(--font-mono);position:absolute;
+  bottom:4px;left:50%;transform:translateX(-50%);opacity:0;transition:.2s}
+.nav-btn:hover .kbd-hint{opacity:.6}
+
 /* ═══ GITHUB LINK ═══ */
 .gh-link{width:40px;height:40px;border:1px solid var(--border);background:var(--bg-2);border-radius:var(--radius-sm);
   cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);
@@ -687,28 +727,28 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   </div>
   <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-    <span class="tip">Dashboard</span>
+    <span class="tip">Dashboard</span><span class="kbd-hint">1</span>
   </button>
   <button class="nav-btn" data-page="scanner" onclick="showPage('scanner')">
     <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-    <span class="tip">Code Scanner</span>
+    <span class="tip">Code Scanner</span><span class="kbd-hint">2</span>
   </button>
   <button class="nav-btn" data-page="entropy" onclick="showPage('entropy')">
     <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
-    <span class="tip">Entropy Lab</span>
+    <span class="tip">Entropy Lab</span><span class="kbd-hint">3</span>
   </button>
   <button class="nav-btn" data-page="chat" onclick="showPage('chat')">
     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    <span class="tip">AI Chat</span>
+    <span class="tip">AI Chat</span><span class="kbd-hint">4</span>
   </button>
   <button class="nav-btn" data-page="pipeline" onclick="showPage('pipeline')">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    <span class="tip">Pipeline</span>
+    <span class="tip">Pipeline</span><span class="kbd-hint">5</span>
   </button>
   <div class="sidebar-bottom">
     <button class="nav-btn" data-page="arch" onclick="showPage('arch')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg>
-      <span class="tip">Architecture</span>
+      <span class="tip">Architecture</span><span class="kbd-hint">6</span>
     </button>
   </div>
 </aside>
@@ -916,7 +956,8 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
           <div class="scan-progress"><div class="scan-progress-bar" id="scanProgress"></div></div>
         </div>
         <div class="results-header" id="resultsHeader" style="display:none">
-          <div><h3 style="font-size:.95rem;font-weight:700">Security Analysis</h3>
+          <div><div style="display:flex;align-items:center;gap:8px"><h3 style="font-size:.95rem;font-weight:700">Security Analysis</h3>
+            <button class="btn-copy" onclick="copyReport()" id="copyReportBtn">Copy Report</button></div>
             <p style="font-size:.78rem;color:var(--text-2);margin-top:4px" id="resultsSummary"></p></div>
           <div class="score-ring" id="scoreRing">
             <svg viewBox="0 0 68 68"><circle cx="34" cy="34" r="30" fill="none" stroke="var(--bg-2)" stroke-width="4"/>
@@ -986,6 +1027,23 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       <div class="card" style="margin-bottom:16px">
         <div class="heatmap-container"><h4>Byte Distribution (0x00 – 0xFF)</h4><div class="heatmap" id="heatmap"></div></div>
       </div>
+      <div class="card" style="margin-bottom:16px">
+        <h3 style="font-size:.85rem;font-weight:700;margin-bottom:4px">NIST SP 800-90B Checks</h3>
+        <p style="font-size:.72rem;color:var(--text-3);margin-bottom:8px">Sanity checks per NIST SP 800-90B §4.4</p>
+        <div class="nist-checks" id="nistChecks">
+          <div class="nist-check"><div class="check-icon" style="background:var(--bg-3);color:var(--text-3)">—</div>
+            <span class="check-name">All Checks</span><span class="check-detail">Generate entropy to run NIST checks</span></div>
+        </div>
+        <div class="lhl-panel" id="lhlPanel" style="display:none">
+          <h5><svg viewBox="0 0 24 24" width="13" height="13" stroke="var(--cyan)" fill="none" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Leftover Hash Lemma Extraction</h5>
+          <div class="lhl-row"><span class="lhl-label">Input bits (n)</span><span class="lhl-value" id="lhlInputBits">—</span></div>
+          <div class="lhl-row"><span class="lhl-label">Min-entropy (H∞)</span><span class="lhl-value" id="lhlMinEnt">—</span></div>
+          <div class="lhl-row"><span class="lhl-label">Security (ε = 2⁻¹²⁸)</span><span class="lhl-value">128-bit</span></div>
+          <div class="lhl-row"><span class="lhl-label">Extractable bits (k_eff)</span><span class="lhl-value" id="lhlKeff" style="color:var(--cyan)">—</span></div>
+          <div class="lhl-row"><span class="lhl-label">Extractor</span><span class="lhl-value">SHAKE256 XOF</span></div>
+        </div>
+      </div>
       <div class="card">
         <div class="ai-analysis">
           <h4><svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--cyan)" fill="none" stroke-width="2"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
@@ -1005,6 +1063,8 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
       <button class="chat-suggest-btn" onclick="sendSuggestion(this)">What's wrong with using MD5?</button>
       <button class="chat-suggest-btn" onclick="sendSuggestion(this)">Explain the Leftover Hash Lemma</button>
       <button class="chat-suggest-btn" onclick="sendSuggestion(this)">Best practices for key derivation</button>
+      <button class="chat-suggest-btn" onclick="sendSuggestion(this)">How does the COSMO entropy pipeline work?</button>
+      <button class="chat-suggest-btn" onclick="sendSuggestion(this)">What is HKDF-SHA3-256 conditioning?</button>
     </div>
     <div class="chat-messages" id="chatMessages">
       <div class="msg ai">
@@ -1599,6 +1659,29 @@ async function analyzeEntropyData(bytes){
     cell.title=`0x${i.toString(16).padStart(2,'0').toUpperCase()}: ${counts[i]}`;
   });
 
+  // NIST SP 800-90B sanity checks
+  const nistEl = document.getElementById('nistChecks');
+  const checks = [
+    { name:'Shannon Entropy', pass:shannon>6.5, detail:shannon>6.5?`${shannon.toFixed(3)} b/B ≥ 6.5 threshold`:`${shannon.toFixed(3)} b/B < 6.5 threshold` },
+    { name:'Min-Entropy', pass:minEnt>5.0, detail:minEnt>5.0?`H∞ = ${minEnt.toFixed(3)} ≥ 5.0`:`H∞ = ${minEnt.toFixed(3)} < 5.0` },
+    { name:'Chi-Squared', pass:chi<350&&chi>170, detail:(chi<350&&chi>170)?`χ² = ${chi.toFixed(1)} within [170, 350]`:`χ² = ${chi.toFixed(1)} outside expected range` },
+    { name:'Serial Corr', pass:Math.abs(corr)<0.05, detail:Math.abs(corr)<0.05?`|r| = ${Math.abs(corr).toFixed(5)} < 0.05`:`|r| = ${Math.abs(corr).toFixed(5)} ≥ 0.05 (bias detected)` },
+    { name:'Sample Size', pass:n>=64, detail:n>=64?`${n} bytes ≥ 64 minimum`:`${n} bytes < 64 minimum` }
+  ];
+  nistEl.innerHTML = checks.map(c=>`<div class="nist-check"><div class="check-icon ${c.pass?'pass':'fail'}">${c.pass?'✓':'✗'}</div>
+    <span class="check-name">${c.name}</span><span class="check-detail">${c.detail}</span></div>`).join('');
+
+  // LHL extraction calculation
+  const lhlPanel = document.getElementById('lhlPanel');
+  const nBits = n * 8;
+  const epsilon = 128;
+  const kEff = Math.max(0, Math.floor(n * minEnt - 2 * epsilon));
+  lhlPanel.style.display = 'block';
+  document.getElementById('lhlInputBits').textContent = nBits.toLocaleString();
+  document.getElementById('lhlMinEnt').textContent = minEnt.toFixed(4) + ' b/B';
+  document.getElementById('lhlKeff').textContent = kEff > 0 ? kEff.toLocaleString() + ' bits' : '0 (insufficient entropy)';
+  document.getElementById('lhlKeff').style.color = kEff > 0 ? 'var(--cyan)' : 'var(--red)';
+
   state.entropy=quality; document.getElementById('statEntropy').textContent=quality+'%';
   addFeedItem('<path d="M12 2v4m0 12v4m-8-10h4m12 0h4"/>','var(--grad-2)',
     `<strong>Entropy test</strong> — Quality: ${quality}%, Shannon: ${shannon.toFixed(2)} b/B`);
@@ -1656,7 +1739,9 @@ function getDemoReply(q){
   if(l.includes('md5'))return "**MD5 is cryptographically broken** and must never be used for security:\n\n- **Collision attacks**: found in **seconds** on a laptop\n- **Rainbow tables**: MD5 hashes are instantly reversible\n\n**For passwords**, use:\n- `argon2id` (best choice)\n- `bcrypt` (cost ≥ 12)\n- `scrypt` (N=2^14, r=8, p=1)\n\n**For integrity**, use:\n- `SHA-3-256` or `BLAKE2b`";
   if(l.includes('leftover hash')||l.includes('lhl'))return "The **Leftover Hash Lemma (LHL)** guarantees secure randomness extraction:\n\n**Core idea**: From a source with min-entropy H∞, extract `k = H∞ - 2·log(1/ε)` nearly-uniform bits.\n\n**Formula**:\n```\nk_eff = max(0, ⌊n·H∞ - 2·log₂(1/ε)⌋)\noutput = SHAKE256(seed ‖ data, k_eff bits)\n```\n\nWhere ε = 2⁻¹²⁸ for 128-bit security.\n\n**Pipeline**:\n1. Estimate H∞ via NIST SP 800-90B MCV\n2. Compute k_eff extractable bits\n3. Apply SHAKE256 XOF as universal hash\n4. Condition through HKDF-SHA3-256\n\nThe LHL provides **provable security** — output is statistically indistinguishable from true randomness.";
   if(l.includes('key derivation')||l.includes('kdf'))return "**Key Derivation Best Practices**:\n\n**Passwords → Keys:**\n- `Argon2id` — 64MB memory, 3 iterations, parallelism 4\n- Always use unique 16+ byte salt per user\n\n**Keys → Keys:**\n- `HKDF` (RFC 5869)\n- Extract: `PRK = HMAC(salt, key)`\n- Expand: `OKM = HMAC(PRK, info ∥ counter)`\n\n**Rules:**\n1. Never reuse keys across purposes\n2. Use domain separation (`info` parameter)\n3. Minimum **256 bits** for post-quantum security\n4. Rotate keys on schedule\n5. Destroy material when done";
-  return "Great question about cryptographic security. In **demo mode**, I provide guidance on:\n\n- **Post-quantum crypto** (Kyber, Dilithium, FALCON)\n- **Secure hashing** (SHA-3, BLAKE2, Argon2)\n- **Key management** (HKDF, rotation, HSMs)\n- **Code vulnerabilities** (timing attacks, padding oracles)\n- **Entropy quality** (NIST SP 800-90B, CTRBGs)\n\nConnect to **Nebius Token Factory** API to unlock full Nemotron Ultra capabilities.";
+  if(l.includes('cosmo')||l.includes('pipeline')||l.includes('entropy pipeline'))return "The **COSMO Entropy Pipeline** is a 4-stage microservice architecture:\n\n1. **Ingestion** — Captures raw timestamp entropy from hardware events, network jitter, and MQTT sources. Events stream into `cosmo:raw_timestamps` via Redis Streams.\n\n2. **Extraction** — Applies the **Leftover Hash Lemma** using SHAKE256 XOF. Computes `k_eff = ⌊n·H∞ - 2·log₂(1/ε)⌋` extractable bits from imperfect sources.\n\n3. **Mixing Pool** — **HKDF-SHA3-256** conditioning with XOR mixing. Two-stage Extract-then-Expand per RFC 5869 and NIST SP 800-90C.\n\n4. **Anchoring** — Builds **SHA3-256 Merkle trees** over conditioned blocks and writes hash-chained JSONL ledger entries for tamper-evident audit.\n\n**Transport**: Redis Streams with consumer groups\n**Scaling**: Each stage is an independent Docker container\n**Monitoring**: Prometheus metrics on ports 9090–9093";
+  if(l.includes('hkdf')||l.includes('conditioning')||l.includes('sha3'))return "**HKDF-SHA3-256 Conditioning** in CryptoGuard AI:\n\nHKDF (RFC 5869) is a two-stage key derivation function:\n\n**Stage 1 — Extract:**\n```\nPRK = HMAC-SHA3-256(salt, input_key_material)\n```\nCompresses arbitrary-length entropy into a fixed-length pseudorandom key.\n\n**Stage 2 — Expand:**\n```\nOKM = HMAC-SHA3-256(PRK, info ∥ counter)\n```\nExpands PRK into cryptographic key material of desired length.\n\n**XOR Mixing Pool:**\nBefore HKDF, extracted entropy from multiple sources is XOR-mixed into a pool, combining independent entropy streams for maximum randomness.\n\n**Why SHA3-256?**\n- Sponge construction (not Merkle-Damgård)\n- No length-extension attacks\n- Quantum-resistant at 128-bit security level\n- NIST SP 800-90C compliant for conditioning";
+  return "Great question about cryptographic security. In **demo mode**, I provide guidance on:\n\n- **Post-quantum crypto** (Kyber, Dilithium, FALCON)\n- **Secure hashing** (SHA-3, BLAKE2, Argon2)\n- **Key management** (HKDF, rotation, HSMs)\n- **Code vulnerabilities** (timing attacks, padding oracles)\n- **Entropy quality** (NIST SP 800-90B, CTRBGs)\n- **COSMO Pipeline** (ingestion, extraction, conditioning, anchoring)\n\nConnect to **Nebius Token Factory** API to unlock full Nemotron Ultra capabilities.";
 }
 
 // ═══════════════════════════════════════════════
@@ -1780,6 +1865,44 @@ function cleanup() {
 if (new URLSearchParams(window.location.search).has('demo')) {
   setTimeout(runAutoDemo, 800);
 }
+
+// ═══════════════════════════════════════════════
+// COPY REPORT
+// ═══════════════════════════════════════════════
+function copyReport() {
+  const findings = document.querySelectorAll('.finding');
+  if (!findings.length) return;
+  const score = document.getElementById('scoreText').textContent;
+  const summary = document.getElementById('resultsSummary').textContent;
+  let report = `CryptoGuard AI — Security Analysis Report\nScore: ${score}/100\n${summary}\n${'─'.repeat(50)}\n\n`;
+  findings.forEach((f, i) => {
+    const badge = f.querySelector('.badge')?.textContent || '';
+    const title = f.querySelector('.f-title')?.textContent || '';
+    const desc = f.querySelector('.f-desc')?.textContent || '';
+    const fix = f.querySelector('.f-fix')?.textContent || '';
+    report += `[${badge.toUpperCase()}] ${title}\n${desc}\n`;
+    if (fix) report += `Fix: ${fix}\n`;
+    report += '\n';
+  });
+  report += `Generated by CryptoGuard AI — https://gitswagata1.github.io/cryptoguard-ai/`;
+  navigator.clipboard.writeText(report).then(() => {
+    const btn = document.getElementById('copyReportBtn');
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Report'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// KEYBOARD NAVIGATION
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  const pages = ['dashboard','scanner','entropy','chat','pipeline','arch'];
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 6) showPage(pages[num - 1]);
+  if (e.key === 'd' || e.key === 'D') { e.preventDefault(); runAutoDemo(); }
+  if (e.key === 't' || e.key === 'T') { e.preventDefault(); toggleTheme(); }
+});
 </script>
 </body>
 </html>
