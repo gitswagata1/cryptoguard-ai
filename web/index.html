@@ -725,28 +725,28 @@ body{font-family:var(--font-sans);background:var(--bg-0);color:var(--text-1);
   <div class="logo" onclick="showPage('dashboard')">
     <svg viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
   </div>
-  <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')">
+  <button class="nav-btn active" data-page="dashboard" onclick="showPage('dashboard')" aria-label="Dashboard">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     <span class="tip">Dashboard</span><span class="kbd-hint">1</span>
   </button>
-  <button class="nav-btn" data-page="scanner" onclick="showPage('scanner')">
+  <button class="nav-btn" data-page="scanner" onclick="showPage('scanner')" aria-label="Code Scanner">
     <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
     <span class="tip">Code Scanner</span><span class="kbd-hint">2</span>
   </button>
-  <button class="nav-btn" data-page="entropy" onclick="showPage('entropy')">
+  <button class="nav-btn" data-page="entropy" onclick="showPage('entropy')" aria-label="Entropy Lab">
     <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4m-8-10h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
     <span class="tip">Entropy Lab</span><span class="kbd-hint">3</span>
   </button>
-  <button class="nav-btn" data-page="chat" onclick="showPage('chat')">
+  <button class="nav-btn" data-page="chat" onclick="showPage('chat')" aria-label="AI Chat">
     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
     <span class="tip">AI Chat</span><span class="kbd-hint">4</span>
   </button>
-  <button class="nav-btn" data-page="pipeline" onclick="showPage('pipeline')">
+  <button class="nav-btn" data-page="pipeline" onclick="showPage('pipeline')" aria-label="COSMO Pipeline">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     <span class="tip">Pipeline</span><span class="kbd-hint">5</span>
   </button>
   <div class="sidebar-bottom">
-    <button class="nav-btn" data-page="arch" onclick="showPage('arch')">
+    <button class="nav-btn" data-page="arch" onclick="showPage('arch')" aria-label="Architecture and Patent Claims">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z"/></svg>
       <span class="tip">Architecture</span><span class="kbd-hint">6</span>
     </button>
@@ -1591,7 +1591,7 @@ function localScan(code) {
   const counts = { critical: 0, high: 0, medium: 0, low: 0 };
   findings.forEach(f => counts[f.severity] = (counts[f.severity] || 0) + 1);
   const total = findings.length;
-  const score = total === 0 ? 100 : Math.max(0, Math.round(100 - (counts.critical * 18 + counts.high * 12 + counts.medium * 6 + counts.low * 2)));
+  const score = total === 0 ? 100 : Math.max(0, Math.round(100 - (counts.critical * 14 + counts.high * 8 + counts.medium * 4 + counts.low * 1)));
   const parts = [];
   if (counts.critical) parts.push(`${counts.critical} critical`);
   if (counts.high) parts.push(`${counts.high} high`);
@@ -1793,7 +1793,7 @@ async function analyzeEntropyData(bytes){
   const checks = [
     { name:'Shannon Entropy', pass:shannon>6.5, detail:shannon>6.5?`${shannon.toFixed(3)} b/B ≥ 6.5 threshold`:`${shannon.toFixed(3)} b/B < 6.5 threshold` },
     { name:'Min-Entropy', pass:minEnt>5.0, detail:minEnt>5.0?`H∞ = ${minEnt.toFixed(3)} ≥ 5.0`:`H∞ = ${minEnt.toFixed(3)} < 5.0` },
-    { name:'Chi-Squared', pass:chi<350&&chi>170, detail:(chi<350&&chi>170)?`χ² = ${chi.toFixed(1)} within [170, 350]`:`χ² = ${chi.toFixed(1)} outside expected range` },
+    { name:'Chi-Squared', pass:n>=256?(chi<350&&chi>170):true, detail:n>=256?((chi<350&&chi>170)?`χ² = ${chi.toFixed(1)} within [170, 350]`:`χ² = ${chi.toFixed(1)} outside expected range`):`χ² = ${chi.toFixed(1)} (need ≥256 bytes for valid test)` },
     { name:'Serial Corr', pass:Math.abs(corr)<0.05, detail:Math.abs(corr)<0.05?`|r| = ${Math.abs(corr).toFixed(5)} < 0.05`:`|r| = ${Math.abs(corr).toFixed(5)} ≥ 0.05 (bias detected)` },
     { name:'Sample Size', pass:n>=64, detail:n>=64?`${n} bytes ≥ 64 minimum`:`${n} bytes < 64 minimum` }
   ];
@@ -1879,8 +1879,11 @@ function getDemoReply(q){
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 function renderMd(t){return esc(t).replace(/```(\w*)\n([\s\S]*?)```/g,'<pre><code>$2</code></pre>')
   .replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-  .replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^- (.+)/gm,'<li>$1</li>')
-  .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>').replace(/^(\d+)\. (.+)/gm,'<li>$2</li>')
+  .replace(/\*(.+?)\*/g,'<em>$1</em>')
+  .replace(/^(\d+)\. (.+)/gm,'<ol-li>$2</ol-li>')
+  .replace(/^- (.+)/gm,'<ul-li>$1</ul-li>')
+  .replace(/(<ul-li>.*?<\/ul-li>\n?)+/g,m=>'<ul>'+m.replace(/<\/?ul-li>/g,s=>s==='<ul-li>'?'<li>':'</li>')+'</ul>')
+  .replace(/(<ol-li>.*?<\/ol-li>\n?)+/g,m=>'<ol>'+m.replace(/<\/?ol-li>/g,s=>s==='<ol-li>'?'<li>':'</li>')+'</ol>')
   .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
 
 function addFeedItem(icon, gradient, text) {
@@ -2018,6 +2021,9 @@ function copyReport() {
     const btn = document.getElementById('copyReportBtn');
     btn.textContent = 'Copied!'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy Report'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const btn = document.getElementById('copyReportBtn');
+    btn.textContent = 'Failed'; setTimeout(() => { btn.textContent = 'Copy Report'; }, 2000);
   });
 }
 
