@@ -1464,16 +1464,144 @@ const API_BASE = window.location.origin;
 const state = { scans: 0, vulns: 0, entropy: null, chats: 0 };
 const PAGE_TITLES = { dashboard:'Dashboard', scanner:'Code Scanner', entropy:'Entropy Lab', chat:'AI Chat', pipeline:'COSMO Entropy Pipeline', arch:'Architecture & Patent Claims' };
 
-const DEMO_FINDINGS = [
-  {severity:"critical",title:"Hardcoded Secret Key",description:"SECRET_KEY is hardcoded in source code. This will be exposed in version control and compiled artifacts.",line:4,fix:"Use environment variables: os.environ.get('SECRET_KEY')"},
-  {severity:"critical",title:"MD5 Password Hashing",description:"MD5 is cryptographically broken. Collisions can be generated in seconds. Never use for password hashing.",line:7,fix:"Use bcrypt, scrypt, or argon2: hashlib.scrypt(password, salt=salt, n=2**14, r=8, p=1)"},
-  {severity:"high",title:"Insecure Random Number Generator",description:"Python's random module uses Mersenne Twister (MT19937), which is predictable. Token generation is brute-forceable (6 digits = 1M combinations).",line:10,fix:"Use secrets module: secrets.token_hex(16)"},
-  {severity:"high",title:"DES Encryption (56-bit key)",description:"DES was broken in 1999 (cracked in 22 hours). The effective key space is only 2^56.",line:13,fix:"Use AES-256-GCM: from cryptography.hazmat.primitives.ciphers.aead import AESGCM"},
-  {severity:"high",title:"ECB Mode — No Semantic Security",description:"ECB mode encrypts identical plaintext blocks to identical ciphertext. Patterns in data are preserved.",line:14,fix:"Use GCM or CBC mode with random IV: AES.new(key, AES.MODE_GCM)"},
-  {severity:"medium",title:"Improper Padding Scheme",description:"Space padding is non-standard and can cause data corruption. Not compatible with standard unpadding.",line:15,fix:"Use PKCS7 padding: from cryptography.hazmat.primitives.padding import PKCS7"},
-  {severity:"medium",title:"SHA-1 Signature Verification",description:"SHA-1 has known collision attacks (SHAttered, 2017). Not suitable for digital signatures.",line:19,fix:"Use SHA-256 or SHA-3: hashlib.sha256(message.encode()).hexdigest()"},
-  {severity:"low",title:"Timing-Unsafe Comparison",description:"Using == for signature comparison is vulnerable to timing side-channel attacks.",line:20,fix:"Use hmac.compare_digest(signature, expected)"}
+// ═══════════════════════════════════════════════
+// 10-CLASS VULNERABILITY TAXONOMY (client-side scanner)
+// Mirrors src/cosmo_core/taxonomy.py
+// ═══════════════════════════════════════════════
+const VULN_RULES = [
+  { cls:'HARDCODED_SECRETS', severity:'critical', title:'Hardcoded secret or credential',
+    desc:'Secret keys, passwords, or tokens embedded directly in source code.',
+    fix:'Move secrets to environment variables or a secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault).',
+    patterns:[
+      /(?:api[_-]?key|secret[_-]?key|password|passwd|token|auth[_-]?token)\s*[:=]\s*["'][A-Za-z0-9+/=_\-]{8,}["']/i,
+      /(?:AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}/,
+      /(?:private[_-]?key)\s*[:=]\s*["']-----BEGIN/i
+    ]},
+  { cls:'WEAK_HASH', severity:'high', title:'Weak or broken hash function',
+    desc:'Use of MD5, SHA-1, or other cryptographically broken hash algorithms.',
+    fix:'Replace with SHA-256 or SHA-3. For password hashing use bcrypt/scrypt/Argon2.',
+    patterns:[
+      /\bhashlib\.(?:md5|sha1)\b/,
+      /\bMessageDigest\.getInstance\(\s*["'](?:MD5|SHA-?1)["']\s*\)/,
+      /\bcrypto\.createHash\(\s*["'](?:md5|sha1)["']\s*\)/,
+      /\b(?:md5|sha1)\.(?:New|Sum)\b/,
+      /\bMD5\s*\(/,
+      /\bdigest\s*\(\s*["'](?:MD5|SHA-?1)["']/i
+    ]},
+  { cls:'INSECURE_RNG', severity:'critical', title:'Insecure random number generator',
+    desc:'Use of non-cryptographic PRNG for security-sensitive operations.',
+    fix:'Use os.urandom(), secrets module, crypto/rand (Go), SecureRandom (Java), or crypto.getRandomValues() (JS).',
+    patterns:[
+      /\brandom\.(?:random|randint|choice|randrange|seed|uniform|shuffle)\b/,
+      /\bMath\.random\(\)/,
+      /\bjava\.util\.Random\b/,
+      /\bmath\/rand\b/,
+      /\brand\.(?:Intn|Int63|Float64|Seed)\b/
+    ]},
+  { cls:'DEPRECATED_CIPHER', severity:'high', title:'Deprecated or broken cipher',
+    desc:'Use of DES, 3DES, RC4, Blowfish, or other deprecated ciphers.',
+    fix:'Use AES-256-GCM or ChaCha20-Poly1305.',
+    patterns:[
+      /\b(?:DES|TripleDES|Triple_DES|DES3|RC4|ARC4|Blowfish)\b/,
+      /Cipher\.getInstance\(\s*["'](?:DES|DESede|RC4|Blowfish)/,
+      /\bcrypto\.createCipher(?:iv)?\(\s*["'](?:des|rc4|bf)/,
+      /\bdes\.NewCipher\b/
+    ]},
+  { cls:'UNSAFE_MODE', severity:'high', title:'Unsafe block cipher mode (ECB)',
+    desc:'ECB mode encrypts identical plaintext blocks to identical ciphertext, leaking patterns.',
+    fix:'Use GCM, CCM, or SIV mode instead of ECB.',
+    patterns:[
+      /\bmodes\.ECB\b/,
+      /\b(?:AES|DES)\.MODE_ECB\b/,
+      /Cipher\.getInstance\(\s*["']AES\/ECB/,
+      /\bcrypto\.createCipher(?:iv)?\(\s*["']aes-\d+-ecb/,
+      /\bMODE_ECB\b/,
+      /\bNewECBEncrypter\b/
+    ]},
+  { cls:'IMPROPER_PADDING', severity:'medium', title:'Improper or weak padding scheme',
+    desc:'PKCS1v15 padding for RSA or custom padding enables padding oracle attacks.',
+    fix:'Use OAEP padding for RSA. For symmetric ciphers, prefer AEAD modes that handle padding internally.',
+    patterns:[
+      /\bPKCS1v15\b/,
+      /Cipher\.getInstance\(\s*["']RSA\/ECB\/PKCS1Padding/,
+      /\bpadding\.PKCS1v15\(\)/
+    ]},
+  { cls:'TIMING_UNSAFE', severity:'high', title:'Timing-unsafe comparison',
+    desc:'Direct equality comparison of secrets or MACs enables timing side-channel attacks.',
+    fix:'Use hmac.compare_digest() (Python), crypto.timingSafeEqual() (Node.js), or subtle.ConstantTimeCompare() (Go).',
+    patterns:[
+      /(?:mac|hash|digest|signature|token|secret|hmac)\s*==\s*/,
+      /\.equals\(\s*(?:mac|hash|digest|signature|token|hmac)/,
+      /\bif\s+.*(?:password|secret|key)\s*==\s*/
+    ]},
+  { cls:'NONCE_REUSE', severity:'critical', title:'Static or reused nonce/IV',
+    desc:'Hardcoded or zero IV/nonce destroys confidentiality in stream ciphers and CTR/GCM mode.',
+    fix:'Generate a fresh random nonce/IV for every encryption operation using os.urandom() or crypto.getRandomValues().',
+    patterns:[
+      /\bnonce\s*[:=]\s*(?:b["']\\x00|bytes\(\d+\)|new\s+byte\[\d+\])/,
+      /\biv\s*[:=]\s*(?:b["']\\x00|bytes\(\d+\)|new\s+byte\[\d+\])/,
+      /\b(?:nonce|iv)\s*[:=]\s*["'][0]+["']/
+    ]},
+  { cls:'INSUFFICIENT_KEY_LENGTH', severity:'medium', title:'Insufficient key length',
+    desc:'Key sizes below recommended minimums: RSA < 2048, AES < 128, EC < 256.',
+    fix:'Use RSA >= 2048 bits, AES >= 128 bits, EC >= 256 bits. Prefer 256-bit symmetric keys for PQ safety.',
+    patterns:[
+      /\bgenerate_private_key\(.*key_size\s*=\s*(?:512|768|1024)\b/,
+      /\bKeyPairGenerator.*\.initialize\(\s*(?:512|768|1024)\b/,
+      /\brsa\.GenerateKey\(.*,\s*(?:512|768|1024)\)/,
+      /\baes-(?:40|56|64)-/
+    ]},
+  { cls:'MISSING_AEAD', severity:'medium', title:'Encryption without authentication',
+    desc:'Symmetric encryption without integrity protection enables bit-flipping and oracle attacks.',
+    fix:'Use an AEAD cipher (AES-GCM, ChaCha20-Poly1305) or add encrypt-then-MAC with HMAC-SHA256.',
+    patterns:[
+      /\bAES\.MODE_CBC\b/,
+      /\bAES\.MODE_CTR\b/,
+      /Cipher\.getInstance\(\s*["']AES\/CBC\/PKCS5Padding["']\s*\)/,
+      /\bcrypto\.createCipher(?:iv)?\(\s*["']aes-\d+-cbc/,
+      /\bmodes\.CBC\b/
+    ]}
 ];
+
+function localScan(code) {
+  const lines = code.split('\n');
+  const findings = [];
+  for (const rule of VULN_RULES) {
+    for (const pat of rule.patterns) {
+      for (let i = 0; i < lines.length; i++) {
+        if (pat.test(lines[i])) {
+          if (!findings.some(f => f.line === i + 1 && f.vuln_class === rule.cls)) {
+            findings.push({
+              severity: rule.severity,
+              title: rule.title,
+              description: rule.desc,
+              line: i + 1,
+              fix: rule.fix,
+              vuln_class: rule.cls
+            });
+          }
+        }
+      }
+    }
+  }
+  findings.sort((a, b) => {
+    const order = { critical: 0, high: 1, medium: 2, low: 3 };
+    return (order[a.severity] ?? 4) - (order[b.severity] ?? 4);
+  });
+  const counts = { critical: 0, high: 0, medium: 0, low: 0 };
+  findings.forEach(f => counts[f.severity] = (counts[f.severity] || 0) + 1);
+  const total = findings.length;
+  const score = total === 0 ? 100 : Math.max(0, Math.round(100 - (counts.critical * 18 + counts.high * 12 + counts.medium * 6 + counts.low * 2)));
+  const parts = [];
+  if (counts.critical) parts.push(`${counts.critical} critical`);
+  if (counts.high) parts.push(`${counts.high} high`);
+  if (counts.medium) parts.push(`${counts.medium} medium`);
+  if (counts.low) parts.push(`${counts.low} low`);
+  const summary = total === 0
+    ? 'No cryptographic vulnerabilities detected. Code looks clean!'
+    : `${total} cryptographic vulnerabilit${total === 1 ? 'y' : 'ies'} detected: ${parts.join(', ')}.`;
+  return { score, findings, summary };
+}
 
 const EXAMPLE_CODE = `import hashlib
 import random
@@ -1567,13 +1695,14 @@ async function scanCode() {
     const r = await fetch(API_BASE+'/api/scan',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({code,language:document.getElementById('langSelect').value})});
     if(!r.ok)throw 0; result = await r.json();
-  } catch { await new Promise(r=>setTimeout(r,1800)); result = {score:12,findings:DEMO_FINDINGS,summary:'Demo — 8 cryptographic vulnerabilities detected including 2 critical, 3 high, 2 medium, 1 low.'}; }
+  } catch { await new Promise(r=>setTimeout(r,1200)); result = localScan(code); }
 
   state.scans++; state.vulns += (result.findings||[]).length; updateDashStats();
   overlay.classList.remove('active'); btn.disabled = false;
   document.getElementById('codeEditorBox').classList.remove('scanning');
+  const mode = result.model_used ? 'Nemotron' : 'rule-based';
   addFeedItem('<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>','var(--grad-3)',
-    `<strong>Scan #${state.scans}</strong> — ${(result.findings||[]).length} vulnerabilities found`);
+    `<strong>Scan #${state.scans}</strong> — ${(result.findings||[]).length} findings (${mode})`);
   renderFindings(result);
 }
 
