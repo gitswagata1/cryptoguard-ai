@@ -67,7 +67,7 @@ SYSTEM_PROMPT = (
 )
 
 KNOWLEDGE_BASE = {
-    "post-quantum": (
+    "quantum": (
         "Post-quantum cryptography uses algorithms resistant to quantum computer attacks. "
         "NIST has standardized ML-KEM (FIPS 203, based on CRYSTALS-Kyber) for key encapsulation "
         "and ML-DSA (FIPS 204, based on CRYSTALS-Dilithium) for digital signatures. "
@@ -75,10 +75,64 @@ KNOWLEDGE_BASE = {
         "(RSA, ECDSA, ECDH, DH), 3) Implement hybrid schemes during transition, "
         "4) Switch to ML-KEM/ML-DSA once libraries are mature."
     ),
+    "md5": (
+        "MD5 is cryptographically broken. Collision attacks run in seconds on commodity hardware. "
+        "For passwords, use Argon2id (memory-hard, side-channel resistant), bcrypt (cost >= 12), "
+        "or scrypt. For integrity, use SHA-3-256 or BLAKE2b."
+    ),
+    "aes": (
+        "AES-GCM is the recommended symmetric cipher. Use 256-bit keys for post-quantum safety. "
+        "96-bit nonces must NEVER repeat per key. For nonce-misuse resistance, use AES-GCM-SIV "
+        "or ChaCha20-Poly1305. Never use ECB mode — it leaks plaintext patterns."
+    ),
+    "password": (
+        "Password storage: use Argon2id (64MB memory, 3 iterations, parallelism 4) with a unique "
+        "16+ byte salt per user. Never use SHA-256/MD5 alone — they're too fast for password hashing. "
+        "Consider adding a pepper: HMAC(server_secret, password) before hashing."
+    ),
+    "tls": (
+        "TLS 1.3 reduces the handshake to 1-RTT with mandatory perfect forward secrecy (ECDHE). "
+        "Only 5 cipher suites allowed. Recommended: TLS_AES_256_GCM_SHA384. "
+        "Disable TLS 1.0/1.1, enable HSTS with includeSubDomains, and use Certificate Transparency."
+    ),
+    "nonce": (
+        "A nonce (number used once) must never repeat per key. AES-GCM nonce reuse leaks the "
+        "GHASH authentication key, allowing forgery of all past messages. Use random 96-bit nonces "
+        "(birthday-safe for ~2^32 messages) or monotonic counters. For safety, prefer AES-GCM-SIV."
+    ),
+    "timing": (
+        "Timing attacks exploit execution time differences to leak secrets. Never compare secrets "
+        "with == (early exit leaks position). Use hmac.compare_digest() in Python or "
+        "crypto.timingSafeEqual() in Node.js. Avoid branching or indexing based on secret data."
+    ),
+    "entropy": (
+        "NIST SP 800-90B defines entropy source validation. Key metrics: Shannon entropy "
+        "(max 8.0 bits/byte), min-entropy (conservative worst-case), chi-squared (uniformity), "
+        "and serial correlation (pattern detection). Use os.urandom() or secrets module, "
+        "never random.random() for security."
+    ),
+    "cosmo": (
+        "The COSMO pipeline has 4 stages: 1) Ingestion captures raw timestamps via Redis Streams, "
+        "2) Extraction applies the Leftover Hash Lemma with SHAKE256, 3) Mixing Pool conditions "
+        "via HKDF-SHA3-256 with XOR mixing, 4) Anchoring builds SHA3-256 Merkle trees and "
+        "writes hash-chained JSONL ledger entries."
+    ),
+    "hkdf": (
+        "HKDF (RFC 5869) is a two-stage KDF: Extract compresses entropy into a PRK via HMAC, "
+        "then Expand derives output key material. CryptoGuard uses HKDF-SHA3-256 for entropy "
+        "conditioning. SHA-3's sponge construction prevents length-extension attacks."
+    ),
+    "jwt": (
+        "JWT security: always whitelist algorithms (use RS256 or EdDSA, not HS256 with shared "
+        "secrets). Set short expiration (15 min access, 7 days refresh). Validate iss, aud, exp "
+        "claims. Store refresh tokens server-side, not in localStorage."
+    ),
     "default": (
         "CryptoGuard AI is an AI-powered cryptographic security operations center. "
         "It provides vulnerability scanning across 10 weakness classes, NIST SP 800-90B "
-        "entropy analysis with Leftover Hash Lemma extraction, and post-quantum migration guidance."
+        "entropy analysis with Leftover Hash Lemma extraction, and post-quantum migration guidance. "
+        "Ask about: post-quantum crypto, AES-GCM, password hashing, TLS 1.3, timing attacks, "
+        "nonce safety, JWT security, entropy testing, or the COSMO pipeline."
     ),
 }
 
