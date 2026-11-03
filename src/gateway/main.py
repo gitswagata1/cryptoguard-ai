@@ -9,8 +9,8 @@ Patent Reference: Claims 1-7 of CryptoGuard AI IDF-B.
 from __future__ import annotations
 
 import logging
+import time
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -78,19 +78,21 @@ def create_app() -> FastAPI:
     from gateway.middleware.telemetry import TelemetryMiddleware
     app.add_middleware(TelemetryMiddleware)
 
-    from gateway.routers import chat, entropy, health, pipeline, scan
+    from gateway.routers import ai, chat, entropy, health, pipeline, scan
     app.include_router(health.router, tags=["health"])
     app.include_router(scan.router, tags=["scanner"])
     app.include_router(entropy.router, tags=["entropy"])
     app.include_router(chat.router, tags=["chat"])
     app.include_router(pipeline.router, tags=["pipeline"])
+    app.include_router(ai.router, tags=["ai"])
 
     from gateway.ws.pipeline import router as ws_router
     app.include_router(ws_router, tags=["websocket"])
 
-    web_dir = Path(__file__).resolve().parent.parent.parent / "web"
-    if web_dir.is_dir():
-        app.mount("/", StaticFiles(directory=str(web_dir), html=True), name="web")
+    import os
+    web_dir = os.path.join(os.path.dirname(__file__), "..", "..", "web")
+    if os.path.isdir(web_dir):
+        app.mount("/", StaticFiles(directory=web_dir, html=True), name="web")
 
     return app
 

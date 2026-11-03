@@ -83,7 +83,7 @@ class EntropyPool:
         ).digest()
 
         hkdf = HKDF(
-            algorithm=hashes.SHA256(),
+            algorithm=hashes.SHA3_256(),
             length=OUTPUT_BLOCK_BYTES,
             salt=salt,
             info=b"cosmo-mixing-pool-v1",

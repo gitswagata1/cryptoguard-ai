@@ -1,4 +1,13 @@
-"""CryptoGuard AI -- shared cryptographic core library."""
+"""CryptoGuard AI -- shared cryptographic core library.
+
+Layers:
+  - Core: entropy analysis, LHL extraction, HKDF-SHA3-256 conditioning,
+    Merkle anchoring, fingerprinting, NIST 800-90B validation, taxonomy scanner.
+  - ML: Isolation Forest anomaly detection, gradient-boosted vulnerability classifier.
+  - DL: Multi-head self-attention code analysis, LSTM entropy prediction.
+  - NLP: Crypto-aware tokenizer, TF-IDF semantic scanner, report generator.
+  - RL: Q-learning entropy pool agent, Thompson sampling scan policy.
+"""
 from __future__ import annotations
 
 from cosmo_core.anchoring import AppendOnlyLedger, compute_merkle_root
@@ -33,6 +42,16 @@ from cosmo_core.taxonomy import (
     build_taxonomy_prompt,
     scan_code,
 )
+
+from cosmo_core.ml.anomaly import EntropyAnomalyDetector, IsolationForest
+from cosmo_core.ml.classifier import FeatureExtractor, VulnerabilityClassifier
+from cosmo_core.dl.attention import CodeVulnerabilityTransformer, MultiHeadSelfAttention
+from cosmo_core.dl.entropy_lstm import EntropyPredictor, LSTMCell
+from cosmo_core.nlp.tokenizer import CryptoCodeTokenizer
+from cosmo_core.nlp.semantic_scanner import SemanticVulnerabilityScanner
+from cosmo_core.nlp.report_generator import VulnerabilityReportGenerator
+from cosmo_core.rl.entropy_agent import EntropyPoolAgent
+from cosmo_core.rl.scan_policy import AdaptiveScanPolicy
 
 __all__ = [
     # entropy
@@ -70,4 +89,21 @@ __all__ = [
     "TAXONOMY",
     "build_taxonomy_prompt",
     "scan_code",
+    # ml
+    "IsolationForest",
+    "EntropyAnomalyDetector",
+    "FeatureExtractor",
+    "VulnerabilityClassifier",
+    # dl
+    "MultiHeadSelfAttention",
+    "CodeVulnerabilityTransformer",
+    "LSTMCell",
+    "EntropyPredictor",
+    # nlp
+    "CryptoCodeTokenizer",
+    "SemanticVulnerabilityScanner",
+    "VulnerabilityReportGenerator",
+    # rl
+    "EntropyPoolAgent",
+    "AdaptiveScanPolicy",
 ]
