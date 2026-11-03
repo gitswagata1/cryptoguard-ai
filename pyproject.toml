@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cosmo-cryptoguard"
-version = "1.0.0"
-description = "AI-Driven Cryptographic Security Analysis with NIST SP 800-90B Entropy Pipeline and Blockchain Anchoring"
+version = "2.0.0"
+description = "AI-Driven Cryptographic Security Analysis with ML/DL/NLP/RL, NIST SP 800-90B Entropy Pipeline, and Blockchain Anchoring"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [{name = "Swagata Banerjee", email = "swagata.banerjee2023@vitstudent.ac.in"}]

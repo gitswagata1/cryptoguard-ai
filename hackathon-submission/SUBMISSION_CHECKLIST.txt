@@ -22,7 +22,17 @@ SUBMISSION ITEMS
 DEVPOST FIELDS
 --------------
 Title:        CryptoGuard AI
-Tagline:      AI-powered cryptographic security operations center using NVIDIA Nemotron on Nebius AI Cloud
+Tagline:      AI-powered cryptographic security analysis with ML/DL/NLP/RL on NVIDIA Nemotron via Nebius AI Cloud
 Description:  See GitHub README.md
-Built With:   NVIDIA Nemotron Ultra 253B, Nemotron Nano 8B, Nebius AI Cloud, FastAPI, Python, JavaScript, Web Crypto API
+Built With:   NVIDIA Nemotron Ultra 253B, Nemotron Nano 8B, Nebius AI Cloud, FastAPI, Python, NumPy, JavaScript, Web Crypto API
 Track:        Best Apps and Agents
+
+v2.0 AI LAYERS (November 2026)
+------------------------------
+[x] ML — Isolation Forest anomaly detection + gradient-boosted vulnerability classifier
+[x] DL — Multi-head self-attention transformer + LSTM entropy time-series predictor
+[x] NLP — Crypto-aware tokenizer + TF-IDF semantic scanner + NLG report generator
+[x] RL — Q-learning entropy pool agent + Thompson sampling scan policy
+[x] Gateway AI router (/api/ai/*) — 8 endpoints exposing all AI capabilities
+[x] Website AI Lab page — interactive analysis, entropy monitor, scan policy dashboard
+[x] 167 tests passing (85 core + 71 AI + 11 gateway AI)
