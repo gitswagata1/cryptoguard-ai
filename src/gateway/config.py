@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     rate_limit_rpm: int = 60
     log_level: str = "INFO"
     pool_size_bytes: int = 4096
+    allowed_origins: str = ""
 
     @property
     def is_cloud_mode(self) -> bool:
