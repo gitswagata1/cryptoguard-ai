@@ -5,7 +5,7 @@ pydantic==2.9.0
 pydantic-settings==2.5.0
 redis==5.0.3
 numpy==1.26.4
-scipy==1.13.0
+scipy==1.17.1
 cryptography==42.0.5
 prometheus-client==0.20.0
 grpcio==1.62.1
