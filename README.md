@@ -373,3 +373,10 @@ Coverage: entropy metric accuracy, NIST 800-90B check correctness, conditioning 
   Built by <strong>Swagata Banerjee</strong> &middot; VIT Vellore<br>
   Nebius x NVIDIA Global AI Hackathon 2025
 </p>
+
+## Roadmap, contributing and citation
+
+- **Roadmap:** [ROADMAP.md](ROADMAP.md) lists planned work and directions for the project.
+- **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the
+  [Code of Conduct](CODE_OF_CONDUCT.md). Issues labelled `good first issue` are a friendly start.
+
